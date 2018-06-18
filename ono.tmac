@@ -33,7 +33,7 @@
 .
 .\" Cross-platform monospace fonts
 .ie t \{
-.	ds C? \\f(CR
+.	ds C! \\f(CR
 .	ds CW \\f(CR
 .	ds CI \\f(CI
 .	ds CB \\f(CB
@@ -41,7 +41,7 @@
 .	el        .ds CE \\f(CB
 '\}
 .el \{
-.	ds C? \\fI
+.	ds C! \\fI
 .	ds CW \\f1
 .	ds CI \\fI
 .	ds CB \\fB
@@ -55,7 +55,7 @@
 .\"=====================================================================
 .
 .\" Horizontal ellipsis for variable-length lists
-.ds .. \\f(C?\\.\&\\.\&\\.\\f(CW
+.ds .. \\f(C!\\.\&\\.\&\\.\\f(CW
 .
 .\" Double-quote
 .ds dq """""
@@ -76,8 +76,8 @@
 .\"   .[ --option VALUE ]
 .\"   .[ --option ]
 .de [ 
-.	ie ,\\$3,],\\*(CW[\\*(CB\\$1\\*(CW\\~\\*(C?\\$2\\*(CW\\$3\\fR
-.	el \\*(CW[\\*(C?\\$1\\*(CW\\$2\\fR
+.	ie ,\\$3,],\\*(CW[\\*(CB\\$1\\*(CW\\~\\*(C!\\$2\\*(CW\\$3\\fR
+.	el \\*(CW[\\*(C!\\$1\\*(CW\\$2\\fR
 ..
 .
 .
@@ -85,10 +85,10 @@
 .\"   .< ./path/to/read.from
 .\"   .> ./path/to/write.to
 .de <
-.	if 1 \\*(CW<\\~\\*(C?\\$1\\fR
+.	if 1 \\*(CW<\\~\\*(C!\\$1\\fR
 ..
 .de >
-.	if 1 \\*(CW>\\~\\*(C?\\$1\\fR
+.	if 1 \\*(CW>\\~\\*(C!\\$1\\fR
 ..
 .
 .
