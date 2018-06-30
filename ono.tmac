@@ -102,6 +102,10 @@
 .\" Underlined text:
 .\"   .UL [text-before] [underlined-text] [text-after]
 .de UL
+'	if \\n(.u=0 \{ \" Disable no-fill mode
+'		nr f? 1
+'		fi
+'	\}
 \\$1
 '	di $
 '	cu 1
@@ -110,6 +114,10 @@
 '	$
 \h'-1n'\\$3
 '	rm $
+'	if \\n(f?=1 \{ \" Restore no-fill mode
+'		rr f?
+'		nf
+'	\}
 ..
 .
 .
