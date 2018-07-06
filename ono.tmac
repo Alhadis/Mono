@@ -31,22 +31,26 @@
 .	ev
 .\}
 .
-.\" Cross-platform monospace fonts
+.\" Adaptive monospace fonts
 .ie t \{
+.	ds `  \\f(CR
+.	ds '  \\fP
+.	ds C? \\f(CR
 .	ds C! \\f(CR
 .	ds CW \\f(CR
 .	ds CI \\f(CI
 .	ds CB \\f(CB
 .	ie \\n(.g .ds CE \\f[CBI]
-.	el        .ds CE \\f(CB
-'\}
+.	el        .ds CE \\f(CB \}
 .el \{
-.	ds C! \\fI
+.	ds `  \\(lq\\fI
+.	ds '  \\fP\\(rq
+.	ds C? \\fI
+.	ds C! \\fB
 .	ds CW \\f1
 .	ds CI \\fI
 .	ds CB \\fB
-.	ds CE \\f(BI
-.\}
+.	ds CE \\f(BI \}
 .\" End of font setup
 .
 .
