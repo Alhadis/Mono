@@ -1,0 +1,17 @@
+.DS_Store
+Thumbs.db
+Desktop.ini
+node_modules
+package-lock.json
+.nyc_output
+._*
+.\#*
+\#*\#
+*~
+*.log
+*.lock
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
+/test.*
