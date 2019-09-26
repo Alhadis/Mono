@@ -1,40 +1,25 @@
-.\" -*- coding: utf-8 -*-
+.\" -*- nroff -*- vim:set ft=nroff:
 .
-.
-.\"=====================================================================
-.\" -* GLOBAL REGISTERS *-
-.\"=====================================================================
-.
-.\" Identify the formatter processing the document.
-.\" The program's name is stored in the `T?` string.
-.if !\*(T? \{\
-.	ev 2
-.	ds T? unknown
-.	nf
-.	nr F \n(.u
-.	nr A \n(.d
-\v'2m'
-.	nr B \n(.d
-\v'-2m'
-.	ie '\nA'\nB' .ds T? mandoc
-.	el \{\
-.		ie 0<>1 .ds T? heirloom
-.		el \{\
-.			nr A 1
-.			do if \n[A]=1 .ds T? groff
-.		\}
+.\" Identify the flavour of troff(1) processing the document
+.ds T? unknown
+.ft R
+.ie \n(.f=0 .ds T? mandoc
+.el \{\
+.	ft
+.	ie 0<>1 .ds T? heirloom
+.	el .ie \w,\X'# Ignore',>0 .ds T? otroff
+.	el .ie !'\*[T?]'unknown' \{\
+.		ds T? ditroff
+.		if \n(.C=1 .do ds T? groff
 .	\}
-.	if \nF=1 .fi
-.	rr F
-.	rr A
-.	rr B
-.	ev
+.	el .if \n(.g=1 .ds T? groff
 .\}
+.
+.ds ' \N'39' \" Single-quote
+.ds - \N'45' \" ASCII hyphen
 .
 .\" Adaptive monospace fonts
 .ie t \{
-.	ds `  \\f(CR
-.	ds '  \\fP
 .	ds C? \\f(CR
 .	ds C! \\f(CR
 .	ds CW \\f(CR
@@ -43,8 +28,6 @@
 .	ie \\n(.g .ds CE \\f[CBI]
 .	el        .ds CE \\f(CB \}
 .el \{
-.	ds `  \\(lq\\fI
-.	ds '  \\fP\\(rq
 .	ds C? \\fI
 .	ds C! \\fB
 .	ds CW \\f1
@@ -52,106 +35,3 @@
 .	ds CB \\fB
 .	ds CE \\f(BI \}
 .\" End of font setup
-.
-.
-.\"=====================================================================
-.\" -* STRINGS *-
-.\"=====================================================================
-.
-.\" Horizontal ellipsis for variable-length lists
-.ds .. \\f(C!\\.\&\\.\&\\.\\f(CW
-.
-.\" Double-quote
-.ds dq ""
-.
-.\" Single-quote
-.ds sq \N'39'
-.ds '  \*(sq
-.
-.\" ASCII hyphen
-.ds - \N'45'
-.
-.
-.\"=====================================================================
-.\" -* MACRO DEFINITIONS *-
-.\"=====================================================================
-.
-.\" Synopsis: Program name
-.de $~
-.	fi
-.	if 1 \\*(CB\\$1\\fR
-..
-.
-.
-.\" Synopsis: Option/switch
-.\"   .[ --option VALUE ]
-.\"   .[ --option ]
-.de [ 
-.	ie ,\\$3,],\\*(CW[\\*(CB\\$1\\*(CW\ \\*(C!\\$2\\*(CW\\$3\\fR
-.	el \\*(CW[\\*(C!\\$1\\*(CW\\$2\\fR
-..
-.
-.
-.\" Synopsis: Redirection indicators
-.\"   .< ./path/to/read.from
-.\"   .> ./path/to/write.to
-.de <
-.	if 1 \\*(CW<\ \\*(C!\\$1\\fR
-..
-.de >
-.	if 1 \\*(CW>\ \\*(C!\\$1\\fR
-..
-.
-.
-.\" Underlined text:
-.\"   .UL [text-before] [underlined-text] [text-after]
-.de UL
-'	if \\n(.u=0 \{ \" Disable no-fill mode
-'		nr f? 1
-'		fi
-'	\}
-\\$1
-'	di $
-'	cu 1
-\h'-1n'\\$2
-'	di
-'	$
-\h'-1n'\\$3
-'	rm $
-'	if \\n(f?=1 \{ \" Restore no-fill mode
-'		rr f?
-'		nf
-'	\}
-..
-.
-.
-.\" E-mail address
-.\" .EM [displayed-name] [mailto-uri]
-'de EM
-'	ie d MT \{
-'		if 1 \\$1
-'		MT \\f(CW\\$2\\fP
-'		ME
-.	\}
-'	el 'ie d An \
-.		An \\$1 Aq Mt \\$2
-'	el \
-'		UL \\(la \\$2 \\(ra
-..
-.
-.
-.\" Option description (Multi-line)
-.de OP
-.	TP
-.	ie !'\\$4'' \
-.		BR \-\\$1 \ \fI\\$4\fP,\  \-\-\\$2 =\fI\\$4\fP
-.	el .BR \-\\$1 ,\  \-\-\\$2
-..
-.
-.
-.\"=====================================================================
-.\" -* EOF *-
-.\"=====================================================================
-.\" Local variables
-.\" mode: nroff
-.\" End
