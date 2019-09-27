@@ -15,3 +15,13 @@ package-lock.json
 [._]s[a-v][a-z]
 [._]sw[a-p]
 /test.*
+
+# Project-specific
+/*.cat
+/*.dit
+/*.ditroff
+/*.htm
+/*.html
+/*.out
+/*.pdf
+/*.ps
