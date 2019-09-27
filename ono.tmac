@@ -35,3 +35,57 @@
 .	ds CB \\fB
 .	ds CE \\f(BI \}
 .\" End of font setup
+.
+.
+.\" Underlined text
+.de UL
+'	\" Temporarily disable no-fill mode
+'	rr $
+'	if \\n(.u=0 \{\
+'		nr $ 1
+'		fi
+'	\}
+'
+'	\" Resolve argument order
+'	ds $1 \\$1
+'	ds $2 \\$2
+'	ds $3 \\$3
+'	if \\n(.$<3 \{\
+'		ds $1 \&
+'		ds $2 \\$1
+'		ds $3 \&\\$2 \}
+'
+'	\" Nroff
+'	ie n \{\
+\\*($1
+'		cu 1
+\h'-1n'\\*($2\h'-1n'
+\\*($3
+'	\}
+'
+'	\" Troff
+'	el \{\
+'		ie '\\*(T?'otroff' \\*($1\l'\w,\\*($2,u\(ul'\h'-\w,\\*($2,u'\\*($2\\*($3
+'		el \\*($1\D'l \w,\\*($2,u 0u'\h'-\w,\\*($2,u'\\*($2\\$3
+'	\}
+'	
+'	\" Restore no-fill mode
+'	if \\n$=1 \{\
+'		rr $
+.		nf
+'	\}
+'
+'	\" Clean up
+'	rm $1
+'	rm $2
+'	rm $3
+'	rm $4
+'	rm $5
+..
+.
+'\" Spoon-feed mandoc(1), which doesn't grok underlines or macros very well
+.if '\*(T?'mandoc' .de UL
+.	ie     \\n(.$=1 \\fI\\$1\\fP
+.	el .ie \\n(.$=2 \\fI\\$1\\fP\\$2
+.	el .ie \\n(.$>2 \\$1\\fI\\$2\\fP\\$3
+..
