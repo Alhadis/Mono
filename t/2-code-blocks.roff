@@ -1,0 +1,17 @@
+.so ./ono.tmac
+.
+Before
+.`` js
+let foo = new Foo("bar");
+foo.toString(); // Comment
+.``
+After
+.
+.sp 2
+Before
+.`` js 10n
+if(true){
+\&	return 1;
+}
+.``
+After
