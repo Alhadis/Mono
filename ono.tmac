@@ -89,3 +89,43 @@
 .	el .ie \\n(.$=2 \\fI\\$1\\fP\\$2
 .	el .ie \\n(.$>2 \\$1\\fI\\$2\\fP\\$3
 ..
+.
+.
+'\" Indented code block
+.de ``
+'	\" Begin block
+'	ie !\\n(`` \{\
+.		br
+'		nr `` 1
+'		ie \\$2>1 \{\
+'			nr `` \\$2
+'			in \\$2
+'		\}
+'		el 'in +6n
+'		nr mE \\n(.f
+'		nf
+'		nh
+'		ft CW
+'		if !'\*(T?'mandoc' \!x X code: begin \\$1
+'	\}
+'
+'	\" End block
+'	el \{\
+'		if !'\*(T?'mandoc' \!x X code: end
+'		ie \\n(``>1 'in -\\n(``
+'		el 'in -6n
+'		ft \\n(mE
+'		fi
+'		hy \\n(HY
+'		rr mE
+'		rr ``
+.		br
+'	\}
+..
+.
+.\" Inter-paragraph vertical spacing
+.de SP
+'	ie \\$1>0           .sp \\$1
+'	el 'ie (0.4v<\n(.V) .sp \n(.Vu
+'	el                  .sp 0.4v
+..
