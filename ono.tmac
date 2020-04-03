@@ -129,3 +129,24 @@
 '	el 'ie (0.4v<\n(.V) .sp \n(.Vu
 '	el                  .sp 0.4v
 ..
+.
+.
+.\" Wrapper to support legacy troff(1)/compatibility-mode
+.de FONT
+.	FO \\$1 \\$2
+.	.
+.	ig NT
+.	NT
+..
+.
+.\" Set font's typeface and point-size properties
+.de FO
+.	\" Called in compatibility-mode
+.	ie 'NT'\\$1' \
+.		FO \\$2 \\$3
+.	el \{\
+.		ps \\$1
+.		vs \\$1
+.		if !''\\$2' .ft \\$2
+'	\}
+..
