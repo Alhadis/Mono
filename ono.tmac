@@ -150,3 +150,17 @@
 .		if !''\\$2' .ft \\$2
 '	\}
 ..
+.
+.
+.\" Store the character count of $2 in register $1
+.de $#
+.	if '\*(T?'groff' \{\
+.		length \\$1 \\$2
+.		return
+.	\}
+.	ft CW
+.	cs \\n(.f 36
+.	nr \\$1 \\w'\\$2'/\\w'X'
+.	cs \\n(.f
+.	ft
+..
