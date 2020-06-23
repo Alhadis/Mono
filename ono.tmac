@@ -84,11 +84,11 @@
 ..
 .
 '\" Spoon-feed mandoc(1), which doesn't grok underlines or macros very well
-.if '\*(T?'mandoc' .de UL
+.if '\*(T?'mandoc' \{ .de UL
 .	ie     \\n(.$=1 \\fI\\$1\\fP
 .	el .ie \\n(.$=2 \\fI\\$1\\fP\\$2
 .	el .ie \\n(.$>2 \\$1\\fI\\$2\\fP\\$3
-..
+.. \}
 .
 .
 '\" Indented code block
