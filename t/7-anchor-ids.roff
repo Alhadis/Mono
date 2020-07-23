@@ -1,0 +1,18 @@
+.so ./ono.tmac
+.
+.nf
+.#+ XY id-
+\*(XY should equal "id-1"
+.
+.#+ XY id-
+\*(XY should equal "id-2"
+.
+.#< Skip id-3
+.#+ XY id-
+\*(XY should equal "id-4"
+.
+.#+ XY prefixed-
+\*(XY should equal "prefixed-5"
+.
+.#> Skip XY
+\*(XY should have been set to "id-3"

@@ -1,0 +1,27 @@
+.so ./ono.tmac
+.
+.\" HACK: Make vertical offset of PDF bookmarks easier to notice/test
+.if '\*(.T'pdf' \{\
+.	blm br
+.	de br
+.		sp 5
+.	.
+.. \}
+.
+.nf
+.# \" No arguments
+Ignored.
+
+.# Text
+Display $1, generate ID automatically using \en(## register.
+
+.# Text id
+Display $1, use $2 for ID.
+
+.# Text id affix
+Display the concatenation of $1 and $3, use $2 for ID.
+
+.# "" hidden-anchor
+If PDF, insert a named destination without an outline entry.
+If HTML, insert <a name="$2"></a> without any following whitespace.
+Ignored in every other format.
