@@ -1,18 +1,18 @@
 .\" -*- nroff -*- vim:set ft=nroff:
 .
 .\" Identify the flavour of troff(1) processing the document
-.ds T? unknown
+.ds $0 unknown
 .ft R
-.ie \n(.f=0 .ds T? mandoc
+.ie \n(.f=0 .ds $0 mandoc
 .el \{\
 .	ft
-.	ie 0<>1 .ds T? heirloom
-.	el .ie \w,\X'# Ignore',>0 .ds T? otroff
-.	el .ie !'\*[T?]'unknown' \{\
-.		ds T? ditroff
-.		if \n(.C=1 .do ds T? groff
+.	ie 0<>1 .ds $0 heirloom
+.	el .ie \w,\X'# Ignore',>0 .ds $0 otroff
+.	el .ie !'\*[$0]'unknown' \{\
+.		ds $0 ditroff
+.		if \n(.C=1 .do ds $0 groff
 .	\}
-.	el .if \n(.g=1 .ds T? groff
+.	el .if \n(.g=1 .ds $0 groff
 .\}
 .
 .ds ' \N'39' \" Single-quote
@@ -65,7 +65,7 @@
 '
 '	\" Troff
 '	el \{\
-'		ie '\\*(T?'otroff' \\*($1\l'\w,\\*($2,u\(ul'\h'-\w,\\*($2,u'\\*($2\\*($3
+'		ie '\\*($0'otroff' \\*($1\l'\w,\\*($2,u\(ul'\h'-\w,\\*($2,u'\\*($2\\*($3
 '		el \\*($1\D'l \w,\\*($2,u 0u'\h'-\w,\\*($2,u'\\*($2\\$3
 '	\}
 '	
@@ -84,7 +84,7 @@
 ..
 .
 '\" Spoon-feed mandoc(1), which doesn't grok underlines or macros very well
-.if '\*(T?'mandoc' \{ .de UL
+.if '\*($0'mandoc' \{ .de UL
 .	ie     \\n(.$=1 \\fI\\$1\\fP
 .	el .ie \\n(.$=2 \\fI\\$1\\fP\\$2
 .	el .ie \\n(.$>2 \\$1\\fI\\$2\\fP\\$3
@@ -106,12 +106,12 @@
 '		nf
 '		nh
 '		ft CW
-'		if !'\*(T?'mandoc' \!x X code: begin \\$1
+'		if !'\*($0'mandoc' \!x X code: begin \\$1
 '	\}
 '
 '	\" End block
 '	el \{\
-'		if !'\*(T?'mandoc' \!x X code: end
+'		if !'\*($0'mandoc' \!x X code: end
 '		ie \\n(``>1 'in -\\n(``
 '		el 'in -6n
 '		ft \\n(mE
@@ -154,7 +154,7 @@
 .
 .\" Store the character count of $2 in register $1
 .de $#
-.	if '\*(T?'groff' \{\
+.	if '\*($0'groff' \{\
 .		length \\$1 \\$2
 .		return
 .	\}
