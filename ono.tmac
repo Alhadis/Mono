@@ -23,6 +23,12 @@
 .	ds - \U'2D'
 .	if !'\*(.T'html' .if t .ds - \(hy
 .\}
+.el .ie '\*($0'otroff' \{\
+.	ds ^ ^
+.	ds ~ ~
+.	ds ' '
+.	ds - \(hy
+.\}
 .el .ie n \{\
 .	ds ^ \N'94'
 .	ds ~ \N'126'
