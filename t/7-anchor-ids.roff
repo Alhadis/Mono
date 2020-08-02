@@ -1,18 +1,33 @@
 .so ./ono.tmac
 .
 .nf
-.#+ XY id-
-\*(XY should equal "id-1"
+.#+ "A) Foo" foo
+.#> "A) Foo" id
+\*(id	=== foo
 .
-.#+ XY id-
-\*(XY should equal "id-2"
+.#+ "B) Bar"
+.#> "B) Bar" id
+\*(id	=== id
 .
-.#< Skip id-3
-.#+ XY id-
-\*(XY should equal "id-4"
+.#+ "C) Baz"
+.#> "C) Baz" id
+\*(id	=== id-1
 .
-.#+ XY prefixed-
-\*(XY should equal "prefixed-5"
+.#+ "D) Qux" foo
+.#> "D) Qux" id
+\*(id	=== foo-1
 .
-.#> Skip XY
-\*(XY should have been set to "id-3"
+.#+ "E) Qul" foo
+.#> "E) Qul" id
+\*(id	=== foo-2
+.
+.#+ "F) Fax" foo-3
+.#> "F) Fax" id
+\*(id	=== foo-3
+.
+.#+ "G) Gaz" foo
+.#> "G) Gaz" id
+\*(id	=== foo-4
+.
+foo	=== \c
+.#> "A) Foo"
