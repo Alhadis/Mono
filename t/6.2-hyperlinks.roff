@@ -1,0 +1,38 @@
+.so ./ono.tmac
+.nf
+.
+.[  https://url1.com  ]() ,
+.[ "https://url2.com" ]() ,
+.[  https://url3.com/bad\ filename ]() ,
+.[ "https://url4.com/worse\ file""name" ]() .
+.
+.[  email1@address  ]<> ,
+.[ "email2@address" ]<> ,
+.[  email3@bad\ address ]<> ,
+.[ "email4@bad\ add""ress" ]<> .
+.
+.[  anchor-id1     ][] ,
+.[  anchor-id2     ][] ,
+.[ "ancho""r\ id3" ][] ,
+.[  anchor-id4     ]   ,
+.[  anchor\ id5    ]   ,
+.[ "ancho""r\ id6" ]   .
+.
+.
+.[  Link\~1   ](  https://url1.com  ) ,
+.[ "Link 2"   ]( "https://url2.com" ) ,
+.[  Link\ 3   ]( https://ur\ l3.com ) .
+.
+.[  Anchor\~1 ][  anchor1-id  ] ,
+.[ "Anchor 2" ][ "anchor2-id" ] ,
+.[  Anchor\ 3 ][  anchor3\ id ] .
+.
+.[  E-mail\~1 ]<  email1@address  > ,
+.[ "E-mail 2" ]< "email2@address" > ,
+.[  E-mail\ 3 ]<  email3@\ address > .
+.
+.
+.\" Realistic examples
+.[ Details ]( " (visit " http://url " for more information)" ) ,
+.[ Term-ID ][ " (q.v. " term-id ", section 3.2)" ] ,
+.[ "Send an e-mail" ]< " to " email@address.com "" > .
