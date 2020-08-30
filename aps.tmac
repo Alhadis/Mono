@@ -1,0 +1,91 @@
+.de HAS-KEY \" [MAP-NAME] [KEY] [OUT-NR]
+.	if !'\\$3'' .rr \\$3
+..
+.
+.de HAS-VALUE \" [MAP-NAME] [VALUE] [OUT-NR]
+.	if !'\\$3'' .rr \\$3
+..
+.
+.de GET \" [MAP-NAME] [KEY] [OUT-STR]
+.	if !'\\$3'' .rm \\$3
+..
+.
+.de SET \" [MAP-NAME] [KEY] [VALUE]
+.	am HAS-KEY >>
+.	if '\\\\$1'\\$1' .if '\\\\$2'\\$2' .nr \\\\$3 1
+.	>>
+.	am HAS-VALUE >>
+.	if '\\\\$1'\\$1' .if '\\\\$2'\\$3' .nr \\\\$3 1
+.	>>
+.	am GET >>
+.	if '\\\\$1'\\$1' .if '\\\\$2'\\$2' .ds \\\\$3 \\$3
+.	>>
+..
+.
+.de UID \" [KEY] [VALUE "id"]
+.	HAS-VALUE ID "\\$2" $?
+.
+.	\" ID already exists
+.	ie \\n($?=1 \{\
+.		HAS-VALUE ID "\\$2-\\n(##" $?
+.
+.		\" Suffixed ID exists too; increment and try again
+.		ie \\n($?=1 \{\
+.			nr ## \\n(##+1
+.			UID "\\$1" "\\$2"
+.		\}
+.
+.		\" This suffix is free; use it
+.		el .SET ID "\\$1" "\\$2-\\n(##"
+.	\}
+.
+.	\" ID not yet allocated; use it
+.	el .SET ID "\\$1" "\\$2"
+.
+.	\" Clean up
+.	rr $?
+..
+.
+.\" Generate an internal identifier from a string
+.de SLUG \" [TEXT] [OUT-STR]
+.	ev 1
+.	fi
+.	di $1
+.		tr '\&"\&\(aq\&\(lq\&\(rq\&\(oq\&\(rq\&\(aa\&\(ga\&
+.		tr "\&! # $ % & ( ) * + , . / : ; < = > ? @ [ \e ] ^ _ ` { | } ~
+.		.. "\\$1"
+.		tr ''""\(aq\(aq\(lq\(lq\(rq\(rq\(oq\(oq\(rq\(rq\(aa\(aa\(ga\(ga
+.		tr !!##$$%%&&(())**++,,..//::;;<<==>>??@@[[\e\e]]^^__``{{||}}~~
+.		br
+.	di
+.	ds \\$2 \\*($1
+.	de $1 >>
+.		ie     \\\\n(.$=1 .ds \\$2 \&\\\\$1
+.		el .ie \\\\n(.$=2 .ds \\$2 \&\\\\$1-\\\\$2
+.		el .ie \\\\n(.$=3 .ds \\$2 \&\\\\$1-\\\\$2-\\\\$3
+.		el .ie \\\\n(.$=4 .ds \\$2 \&\\\\$1-\\\\$2-\\\\$3-\\\\$4
+.		el .ie \\\\n(.$=5 .ds \\$2 \&\\\\$1-\\\\$2-\\\\$3-\\\\$4-\\\\$5
+.		el .ie \\\\n(.$=6 .ds \\$2 \&\\\\$1-\\\\$2-\\\\$3-\\\\$4-\\\\$5-\\\\$6
+.		el .ie \\\\n(.$=7 .ds \\$2 \&\\\\$1-\\\\$2-\\\\$3-\\\\$4-\\\\$5-\\\\$6-\\\\$7
+.		el .ie \\\\n(.$>7 \{\
+.			\" TODO: Join argument-lists longer than 9 elements
+.			ds \\$2 \&\\\\$1-\\\\$2-\\\\$3-\\\\$4-\\\\$5-\\\\$6-\\\\$7-\\\\$8
+.			if \\\\n(.$>8 \{\
+.				ev 2
+.				nf
+.				di $2
+\&\\\\*($*
+.				br
+.				di
+\\n(dw
+.				it 1 $2
+.			\}
+.		\}
+.	>>
+.	$1
+.	rm $1
+.	ev
+..
+.
+.SLUG "Here's an ""ID"" string ++1 2 3 4 5 6 7 8 9" xy
+[\*(xy]
