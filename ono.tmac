@@ -120,47 +120,46 @@
 .\" Underlined text
 .de UL
 '	\" Temporarily disable no-fill mode
-'	rr $
+'	rr U
 '	if \\n(.u=0 \{\
-'		nr $ 1
+'		nr U 1
 '		fi
 '	\}
 '
 '	\" Resolve argument order
-'	ds $1 \\$1
-'	ds $2 \\$2
-'	ds $3 \\$3
+'	ds U \\$1
+'	ds U \\$2
+'	ds U \\$3
 '	if \\n(.$<3 \{\
-'		ds $1 \&
-'		ds $2 \\$1
-'		ds $3 \&\\$2 \}
+'		ds U \&
+'		ds U \\$1
+'		ds U \&\\$2
+'	\}
 '
 '	\" Nroff
 '	ie n \{\
-\\*($1
+\\*(U
 '		cu 1
-\h'-1n'\\*($2\h'-1n'
-\\*($3
+\h'-1n'\\*(U\h'-1n'
+\\*(U
 '	\}
 '
 '	\" Troff
 '	el \{\
-'		ie '\\*($0'otroff' \\*($1\l'\w,\\*($2,u\(ul'\h'-\w,\\*($2,u'\\*($2\\*($3
-'		el \\*($1\D'l \w,\\*($2,u 0u'\h'-\w,\\*($2,u'\\*($2\\$3
+'		ie '\\*($0'otroff' \\*(U\l'\w,\\*(U,u\(ul'\h'-\w,\\*(U,u'\\*(U\\*(U
+'		el \\*(U\D'l \w,\\*(U,u 0u'\h'-\w,\\*(U,u'\\*(U\\$3
 '	\}
 '	
 '	\" Restore no-fill mode
-'	if \\n$=1 \{\
-'		rr $
+'	if \\n(U=1 \{\
+'		rr U
 .		nf
 '	\}
 '
 '	\" Clean up
-'	rm $1
-'	rm $2
-'	rm $3
-'	rm $4
-'	rm $5
+'	rm U
+'	rm U
+'	rm U
 ..
 .
 '\" Spoon-feed mandoc(1), which doesn't grok underlines or macros very well
