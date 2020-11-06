@@ -8,7 +8,7 @@
 .	ft
 .	ie 0<>1 .ds $0 heirloom
 .	el .ie \w,\X'# Ignore',>0 .ds $0 otroff
-.	el .ie !'\*[$0]'unknown' \{\
+.	el .ie !'\n[.s]'\n(.s' \{\
 .		ds $0 ditroff
 .		if \n(.C=1 .do ds $0 groff
 .	\}
