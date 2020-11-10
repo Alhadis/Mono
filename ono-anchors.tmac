@@ -1,0 +1,64 @@
+.\" Named destinations for use in document outlines (menus, tables
+.\" of contents, PDF outlines, etc). Complements hyperlink macros.
+.\"
+.\" Uses: \*($0
+.\"
+.\" Registers: #L
+.\"
+.if !'\*#'' \
+.if '\g(#L'' \
+.	nx
+.
+.so ./ono-maps.tmac
+.so ./ono-strings.tmac
+.
+.
+.\" Outline level (PDF only)
+.nr #L 0
+.
+.\" Header
+.de #
+.	if \\n(.$=0 .ig >>
+.	ie !'\\$2'' .SLUG "\\$2" #
+.	el \\n(.$=1 .SLUG "\\$1" #
+.	#+ "\\$1" "\\*(#" #
+..
+.
+.\" Anchor: Heirloom Doctools
+.ie '\*($0'heirloom' \{ .am #
+.	ie '\\$1'' \\A'\\*(#'\\$3
+.	el         \\A'\\*(#'\\X'PDFMark: Bookmark \\n(#L \\$1'\\$1\\$3
+.. \}
+.el \{\
+.
+.\" Anchor: Printed/non-interactive
+.if !'\*(.T'html' \{\
+.if !'\*(.T'pdf'  \{\
+.am #
+.	if !'\\$1\\$3'' \&\\$1\\$3
+.. \}\}
+.
+.\" Anchor: HTML
+.nop .if r ps4html .rm # \" HACK: Fix pre-grohtml(1)
+.if '\*(.T'html' \{ .am #
+.	ie '\\$1\\$3'' \X'html:<a name="\\*(#"></a>'\c
+.	el             \X'html:<a name="\\*(#">'\\$1\X'html:</a>'\\$3
+.. \}
+.
+.\" Anchor: PDF
+.if '\*(.T'pdf' \{\
+.nop .ds PDFBOOKMARK.VIEW /XYZ 0 \\n[PDFPAGE.Y] u 0
+.nop .ds PDFHREF.VIEW     /XYZ 0 \\n[PDFPAGE.Y] u 0
+.am #
+.	ie '\\$1'' .pdfhref M -N "\\*(#"
+.	el         .pdfhref O -T "\\*(#" \\n(#L "\\$1"
+.	if !'\\$1\\$3'' \&\\$1\\$3
+.. \}
+.
+.\}
+.\" Anchor: Footer
+.am #
+.	rm #
+.	ig >>
+.	>>
+..

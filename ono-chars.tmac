@@ -1,0 +1,35 @@
+.if '^'\*^' \
+.if '~'\*~' \
+.if "'"\*'" \
+.if '-'\*-' \
+.	nx
+.
+.\" Uses: $0
+.so ./ono-$0.tmac
+.
+.\" ASCII characters which are harder to typeset than you'd think
+.ie '\*($0'heirloom' \{\
+.	ds ^ \U'5E'
+.	ds ~ \U'7E'
+.	ds ' \U'27'
+.	ds - \U'2D'
+.	if !'\*(.T'html' .if t .ds - \(hy
+.\}
+.el .ie '\*($0'otroff' \{\
+.	ds ^ ^
+.	ds ~ ~
+.	ds ' '
+.	ds - \(hy
+.\}
+.el .ie n \{\
+.	ds ^ \N'94'
+.	ds ~ \N'126'
+.	ds ' \N'39'
+.	ds - \N'45'
+.\}
+.el \{\
+.	ds ^ \N'0'
+.	ds ~ \N'1'
+.	ds ' \N'8'
+.	ds - \N'45'
+.\}

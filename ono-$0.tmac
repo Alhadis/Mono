@@ -1,0 +1,16 @@
+.if !'\$0'' .nx
+.
+.\" $0: Flavour of troff(1) processing the document
+.ds $0 unknown
+.ft R
+.ie \n(.f=0 .ds $0 mandoc
+.el \{\
+.	ft
+.	ie 0<>1 .ds $0 heirloom
+.	el .ie \w,\X'# Ignore',>0 .ds $0 otroff
+.	el .ie !'\n[.s]'\n(.s' \{\
+.		ds $0 ditroff
+.		if \n(.C=1 .do ds $0 groff
+.	\}
+.	el .if \n(.g=1 .ds $0 groff
+.\}

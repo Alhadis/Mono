@@ -1,0 +1,105 @@
+.if \n($#>1 .nx
+.
+.\" HACK: Only used for guarding against circular inclusion
+.nr $# 1
+.
+.so ./ono-$0.tmac
+.so ./ono-case.tmac
+.
+.
+.\" Store the character count of $2 in register $1
+.\"
+.\" Usage:
+.\"     .$# [OUT-NR] [TEXT]
+.\"
+.\" Uses:
+.\"     \*$0
+.de $#
+.	if '\*($0'groff' \{\
+.		length \\$1 \\$2
+.		return
+.	\}
+.	ft CW
+.	cs \\n(.f 36
+.	nr \\$1 \\w'\\$2'/\\w'X'
+.	cs \\n(.f
+.	ft
+..
+.
+.
+.\" Convert a string to a format suitable for an internal identifier
+.\"
+.\" Usage:
+.\"     .SLUG [TEXT] [OUT-STR]
+.\" 
+.\" Example:
+.\"     .SLUG " Here's  an ""ID"" string ++1 2 3_4 5 6 7 8 9" xy
+.\"     \*(xy => heres-an-id-string-1-2-3-4-5-6-7-8-9
+.\"
+.\" Uses:
+.\"     '..
+.\"     .ev 1
+.\"
+.\" Clobbers:
+.\"     \*(~^B \*(~^C \*(~^E \*(^F
+.de SLUG
+.	SL "\\$2" \\$3
+.	ig UG
+.	UG
+..
+.
+.de SL
+.	ie \\n(.$<3 \
+.		SL UG "\\$1" \\$2
+.
+.	el \{\
+.		ev 1
+.
+.		\" Callback to restore prior state
+.		de ~ >>
+.			ad \\n(.j
+.			ll \\n(.l
+.			do hy \\n[.hy]
+.			do warn \\n[.warn]
+.		>>
+.
+.		\" Smash input into separate pieces (1 word/line)
+.		na
+.		nh
+.		ll 0
+.		do warn 0
+.		ds \\$2
+.		de ~ >>
+.			di
+.			ie \\\\n(dl>0 \{\
+.				if !'\\\\*(\\$2'' .as \\$2 -
+.				as \\$2 \\\\*(~
+.			\}
+.			br
+.			di ~
+.			dt 1 ~
+.		>>
+.
+.		\" s/[^-a-z]//g and convert to lowercase
+.		tr '\&"\&\(aq\&\(lq\&\(rq\&\(oq\&\(cq\&\(aa\&\(ga\&
+.		tr "\&!\&#\&$\&%\&&\&(\&)\&*\&+\&,\&.\&/\&:\&;\&<\&=\&>\&?\&@\&[\&\e\&]\&^\&`\&{\&|\&}\&~\&
+.		tr \(hy-\(mi-\(en-\(em-_-
+.		di ~
+.		di ~
+.		dt 1 ~
+\c
+.		.. "\\$1"
+.		di
+.		di
+.
+.		\" Clean up
+.		tr ''""\(aq\(aq\(lq\(lq\(rq\(rq\(oq\(oq\(cq\(cq\(aa\(aa\(ga\(ga
+.		tr !!##$$%%&&(())**++,,..//::;;<<==>>??@@[[\e\e]]^^``{{||}}~~
+.		tr \--\(mi\(mi\(en\(en\(em\(em__
+.		rm ~
+.		rm ~
+.		rm ~
+.		rm ~
+.		ev
+.	\}
+..

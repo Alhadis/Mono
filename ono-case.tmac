@@ -1,0 +1,44 @@
+.if \n(!!>0 .nx
+.nr !! 1 \" HACK: Only used for guarding against circular inclusion
+.
+.so ./ono-shims.tmac
+.
+.
+.\" Print arguments in uppercase.
+.\"
+.\" Usage:
+.\"     .!! [TEXT]
+.\"
+.\" Example:
+.\"     .!! Synopsis
+.\"     .!! See also
+.\"
+.\" Uses:
+.\"     \*($*
+.de !!
+.	tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
+.	tr \(*a\(*A\(*b\(*B\(*g\(*G\(*d\(*D\(*e\(*E\(*z\(*Z\(*y\(*Y\(*h\(*H\(*i\(*I\(*k\(*K\(*l\(*L\(*m\(*M
+.	tr \(*n\(*N\(*c\(*C\(*o\(*O\(*p\(*P\(*r\(*R\(*s\(*S\(*t\(*T\(*u\(*U\(*f\(*F\(*x\(*X\(*q\(*Q\(*w\(*W
+\*($*
+.	tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
+.	tr \(*a\(*a\(*b\(*b\(*g\(*g\(*d\(*d\(*e\(*e\(*z\(*z\(*y\(*y\(*h\(*h\(*i\(*i\(*k\(*k\(*l\(*l\(*m\(*m
+.	tr \(*n\(*n\(*c\(*c\(*o\(*o\(*p\(*p\(*r\(*r\(*s\(*s\(*t\(*t\(*u\(*u\(*f\(*f\(*x\(*x\(*q\(*q\(*w\(*w
+..
+.
+.
+.\" Print arguments in lowercase.
+.\"
+.\" Usage:
+.\"     '.. [TEXT]
+.\"
+.\" Uses:
+.\"     \*($*
+.de ..
+.	tr AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
+.	tr \(*A\(*a\(*B\(*b\(*G\(*g\(*D\(*d\(*E\(*e\(*Z\(*z\(*Y\(*y\(*H\(*h\(*I\(*i\(*K\(*k\(*L\(*l\(*M\(*m
+.	tr \(*N\(*n\(*C\(*c\(*O\(*o\(*P\(*p\(*R\(*r\(*S\(*s\(*T\(*t\(*U\(*u\(*F\(*f\(*X\(*x\(*Q\(*q\(*W\(*w
+\*($*
+.	tr AABBCCDDEEFFGGHHIIJJKKLLMMNNOOPPQQRRSSTTUUVVWWXXYYZZ
+.	tr \(*A\(*A\(*B\(*B\(*G\(*G\(*D\(*D\(*E\(*E\(*Z\(*Z\(*Y\(*Y\(*H\(*H\(*I\(*I\(*K\(*K\(*L\(*L\(*M\(*M
+.	tr \(*N\(*N\(*C\(*C\(*O\(*O\(*P\(*P\(*R\(*R\(*S\(*S\(*T\(*T\(*U\(*U\(*F\(*F\(*X\(*X\(*Q\(*Q\(*W\(*W
+..

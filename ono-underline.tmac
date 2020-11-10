@@ -1,0 +1,70 @@
+.ig
+.UL -- Proper underlined text.
+
+Usage:
+	.UL [TEXT]
+	.UL [TEXT] [AFFIX]
+	.UL [PREFIX] [TEXT] [AFFIX]
+
+Uses:
+	\*($0
+
+Clobbers:
+	\*(U^B \*(U^C \*(U^E
+..
+.if !'\*(UL'' .nx
+.nr U 1
+.so ./ono-$0.tmac
+.
+.de UL
+'	\" Temporarily disable no-fill mode
+'	nr U 0
+'	if \\n(.u=0 \{\
+'		nr U 1
+'		fi
+'	\}
+'
+'	\" Resolve argument order
+'	ds U \\$1
+'	ds U \\$2
+'	ds U \\$3
+'	if \\n(.$<3 \{\
+'		ds U \&
+'		ds U \\$1
+'		ds U \&\\$2
+'	\}
+'
+'	\" Nroff
+'	ie n \{\
+\\*(U
+'		cu 1
+\h'-1n'\\*(U\h'-1n'
+\\*(U
+'	\}
+'
+'	\" Troff
+'	el \{\
+'		ie '\\*($0'otroff' \\*(U\l'\w,\\*(U,u\(ul'\h'-\w,\\*(U,u'\\*(U\\*(U
+'		el \\*(U\D'l \w,\\*(U,u 0u'\h'-\w,\\*(U,u'\\*(U\\$3
+'	\}
+'	
+'	\" Restore no-fill mode
+'	if \\n(U=1 \{\
+'		rr U
+.		nf
+'	\}
+'
+'	\" Clean up
+'	rm U
+'	rm U
+'	rm U
+..
+.
+'\" Spoon-feed mandoc(1), which doesn't grok underlines or macros very well
+.if '\*($0'mandoc' \{\
+.de UL
+.	ie     \\n(.$=1 \\fI\\$1\\fP
+.	el .ie \\n(.$=2 \\fI\\$1\\fP\\$2
+.	el .ie \\n(.$>2 \\$1\\fI\\$2\\fP\\$3
+..
+.\}

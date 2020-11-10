@@ -1,0 +1,37 @@
+.\" Adaptive monospace fonts
+.ie t \{\
+.	ds C? \\f(CR
+.	ds C! \\f(CR
+.	ds CW \\f(CR
+.	ds CI \\f(CI
+.	ds CB \\f(CB
+.	ie \\n(.g .ds CE \\f[CBI]
+.	el        .ds CE \\f(CB
+.\}
+.el \{\
+.	ds C? \\fI
+.	ds C! \\fB
+.	ds CW \\f1
+.	ds CI \\fI
+.	ds CB \\fB
+.	ds CE \\f(BI
+.\}
+.
+.
+.\" Set font's typeface and point-size properties
+.de FONT \" [SIZE] [NAME]
+.	FO \\$1 \\$2
+.	.
+.	ig NT
+.	NT
+..
+.de FO
+.	\" Called in compatibility-mode
+.	ie 'NT'\\$1' \
+.		FO \\$2 \\$3
+.	el \{\
+.		ps \\$1
+.		vs \\$1
+.		if !''\\$2' .ft \\$2
+'	\}
+..

@@ -1,0 +1,54 @@
+.if !'\g(``'' .nx
+.
+.\" Current block's indentation amount. Must be above zero. (default: 6m)
+.nr `` 0
+.
+.
+.\" Indented code block, optionally tagged with a format identifier.
+.\"
+.\" Usage:
+.\"     .`` [SYNTAX] [INDENT 6m]
+.\"     \& Contents
+.\"     .``
+.\"
+.\" Examples:
+.\"     .`` js
+.\"     import {readLines} from "eal/index.mjs";
+.\"     .``
+.\"
+.\" Modifies:
+.\"     \n(`` -- Set to INDENT parameter (or 6m if omitted)
+.\"
+.\" Clobbers:
+.\"     \*(`^B
+.de ``
+'	\" Begin block
+'	ie !\\n(`` \{\
+.		br
+'		ie \\$2>1 'nr `` \\$2
+'		el        'nr `` 6
+'		in +\\n(``n
+'		de ` >>
+'			in -\\n(``
+'			ft \\n(.f
+'			if \\n(.u 'fi
+'			hy
+'			do hy \\n[.hy]
+.		>>
+'		nf
+'		nh
+'		ft CW
+'		do 'if \n[.meta]=1 \X'meta: begin code \\$1'
+'		tr `\`'\*'^\*^~\*~-\*-
+'	\}
+'
+'	\" End block
+'	el \{\
+'		tr ``''^^~~--
+'		do 'if \n[.meta]=1 \X'meta: end code'
+'		`
+'		rm `
+'		rr ``
+.		br
+'	\}
+..

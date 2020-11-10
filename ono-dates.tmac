@@ -1,0 +1,55 @@
+.\" Current year
+.nr YR 1900+\n(yr
+.
+.\" Full month names
+.ie     \n(mo=1  .ds %M January
+.el .ie \n(mo=2  .ds %M February
+.el .ie \n(mo=3  .ds %M March
+.el .ie \n(mo=4  .ds %M April
+.el .ie \n(mo=5  .ds %M May
+.el .ie \n(mo=6  .ds %M June
+.el .ie \n(mo=7  .ds %M July
+.el .ie \n(mo=8  .ds %M August
+.el .ie \n(mo=9  .ds %M September
+.el .ie \n(mo=10 .ds %M October
+.el .ie \n(mo=11 .ds %M November
+.el .if \n(mo=12 .ds %M December
+.
+.\" Abbreviated month names
+.ie     \n(mo=1  .ds %m Jan
+.el .ie \n(mo=2  .ds %m Feb
+.el .ie \n(mo=3  .ds %m Mar
+.el .ie \n(mo=4  .ds %m Apr
+.el .ie \n(mo=5  .ds %m May
+.el .ie \n(mo=6  .ds %m Jun
+.el .ie \n(mo=7  .ds %m Jul
+.el .ie \n(mo=8  .ds %m Aug
+.el .ie \n(mo=9  .ds %m Sep
+.el .ie \n(mo=10 .ds %m Oct
+.el .ie \n(mo=11 .ds %m Nov
+.el .if \n(mo=12 .ds %m Dec
+.
+.\" Day of the week (Full)
+.ie     \n(dw=1 .ds %D Sunday
+.el .ie \n(dw=2 .ds %D Monday
+.el .ie \n(dw=3 .ds %D Tuesday
+.el .ie \n(dw=4 .ds %D Wednesday
+.el .ie \n(dw=5 .ds %D Thursday
+.el .ie \n(dw=6 .ds %D Friday
+.el .if \n(dw=7 .ds %D Saturday
+.
+.\" Day of the week (Abbreviated)
+.ie     \n(dw=1 .ds %d Sun
+.el .ie \n(dw=2 .ds %d Mon
+.el .ie \n(dw=3 .ds %d Tue
+.el .ie \n(dw=4 .ds %d Wed
+.el .ie \n(dw=5 .ds %d Thu
+.el .ie \n(dw=6 .ds %d Fri
+.el .if \n(dw=7 .ds %d Sat
+.
+.\" Day of the month with ordinal suffix: 1st, 2nd, 3rd...
+.ie ((\n(dy>10)&(\n(dy<20)) .ds dy \n(dyth
+.el .ie (\n(dy%10)=1        .ds dy \n(dyst
+.el .ie (\n(dy%10)=2        .ds dy \n(dynd
+.el .ie (\n(dy%10)=3        .ds dy \n(dyrd
+.el                         .ds dy \n(dyth
