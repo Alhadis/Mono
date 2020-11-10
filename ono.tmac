@@ -438,74 +438,127 @@
 .. \}
 .
 .
-.nr ## 1 \" Counter used when generating IDs automatically
-.nr #L 0 \" Outline level (PDF only)
+.\" Outline level (PDF only)
+.nr #L 0
 .
-.\" Set register $2 to 1 if ID $1 exists
-.de #?
-.	if \\n(.$>1 .rr \\$2
+.\" Counter used when generating IDs automatically
+.nr # 1
+.
+.\" Set register $3 to 1 if a key named $2 exists in $1
+.de ?# \" [MAP-NAME] [KEY] [OUT-NR]
+.	if !'\\$3'' .rr \\$3
 ..
 .
-.\" Set register $2 to 1 if string $1 has an ID assigned
-.de ?#
-.	if \\n(.$>1 .rr \\$2
+.\" Set register $3 to 1 if $1 has an entry with a value of $2
+.de #? \" [MAP-NAME] [VALUE] [OUT-NR]
+.	if !'\\$3'' .rr \\$3
 ..
 .
-.\" Store the ID associated with $1 in register $2
-.de #>
-.	if \\n(.$>1 .rm \\$2
+.\" Retrieve an entry named $2 stored in $1
+.de #< \" [MAP-NAME] [KEY] [OUT-STR]
+.	if !'\\$3'' .rm \\$3
 ..
 .
-.\" Associate $1 with the ID $2
-.de #<
+.\" Store an entry in $1 named $2 with value $3
+.de #> \" [MAP-NAME] [KEY] [VALUE]
 .	am ?# >>
-.	if '\\\\$1'\\$1' .nr \\\\$2 1
+.	if '\\\\$1'\\$1' .if '\\\\$2'\\$2' .nr \\\\$3 1
 .	>>
 .	am #? >>
-.	if '\\\\$1'\\$2' .nr \\\\$2 1
+.	if '\\\\$1'\\$1' .if '\\\\$2'\\$3' .nr \\\\$3 1
 .	>>
-.	am #> >>
-.	if '\\\\$1'\\$1' \{\
-.		ie \\\\n(.$>1 .ds \\\\$2 \\$2
-.		el \&\\$2 \}
+.	am #< >>
+.	if '\\\\$1'\\$1' .if '\\\\$2'\\$2' .ds \\\\$3 \\$3
 .	>>
 ..
 .
 .\" Assign a unique identifier to $1
-.de #+
-.	if '\\$2'' \{\
-.		#+ "\\$1" id
-.		ig >>
-.	\}
-.	#? "\\$2" $?
+.de #+ \" [VALUE] [ID] [OUT-STR]
+.	#? ID "\\$2" $?
+.
+.	\" ID already exists
 .	ie \\n($?=1 \{\
-.		#? "\\$2-\\n(##" $?
+.		#? ID "\\$2-\\n(#" $?
+.
+.		\" Suffixed ID exists too; increment and try again
 .		ie \\n($?=1 \{\
-.			nr ## \\n(##+1
+.			nr # \\n(#+1
 .			#+ "\\$1" "\\$2"
 .		\}
+.
+.		\" This suffix is free; use it
 .		el \{\
-.			#< "\\$1" "\\$2-\\n(##"
-.			nr ## 1
+.			#> ID "\\$1" "\\$2-\\n(#"
+.			if !'\\$3'' .#< ID "\\$1" \\$3
 .		\}
 .	\}
-.	el .#< "\\$1" "\\$2"
+.
+.	\" ID not yet allocated; use it
+.	el \{\
+.		#> ID "\\$1" "\\$2"
+.		if !'\\$3'' .#< ID "\\$1" \\$3
+.	\}
+.
+.	\" Clean up
 .	rr $?
-.	ig >>
+..
+.
+.\" Generate an internal identifier from a string
+.de #~ \" [TEXT] [OUT-STR]
+.	ev 1
+.	de ~ >>
+.		ad \\n(.j
+.		ll \\n(.l
+.		do hy \\n[.hy]
+.		do warn \\n[.warn]
 .	>>
+.	na
+.	nh
+.	ll 0
+.	do warn 0
+.	ds \\$2
+.	de ~ >>
+.		di
+.		ie \\\\n(dl>0 \{\
+.			if !'\\\\*(\\$2'' .as \\$2 -
+.			as \\$2 \\\\*(~
+.		\}
+.		br
+.		di ~
+.		dt 1 ~
+.	>>
+.	tr '\&"\&\(aq\&\(lq\&\(rq\&\(oq\&\(cq\&\(aa\&\(ga\&
+.	tr "\&!\&#\&$\&%\&&\&(\&)\&*\&+\&,\&.\&/\&:\&;\&<\&=\&>\&?\&@\&[\&\e\&]\&^\&`\&{\&|\&}\&~\&
+.	tr \(hy-\(mi-\(en-\(em-_-
+.	di ~
+.	di ~
+.	dt 1 ~
+\c
+.	.. "\\$1"
+.	di
+.	di
+.	tr ''""\(aq\(aq\(lq\(lq\(rq\(rq\(oq\(oq\(cq\(cq\(aa\(aa\(ga\(ga
+.	tr !!##$$%%&&(())**++,,..//::;;<<==>>??@@[[\e\e]]^^``{{||}}~~
+.	tr \--\(mi\(mi\(en\(en\(em\(em__
+.	rm ~
+.	rm ~
+.	rm ~
+.	rm ~
+.	ev
 ..
 .
 .\" Anchor: Header
 .de #
 .	if \\n(.$=0 .ig >>
-.	#+ "\\$1" \\$2
-.	#> "\\$1" $2
+.	ie !'\\$2'' .#~ "\\$2" #
+.	el \\n(.$=1 .#~ "\\$1" #
+.	#+ "\\$1" "\\*(#" #
 ..
 .
 .\" Anchor: Heirloom Doctools
 .ie '\*($0'heirloom' \{ .am #
-.	ie '\\$1'' \\A'\\*($2'\\$3
-.	el         \\A'\\*($2'\\X'PDFMark: Bookmark \\n(#L \\$1'\\$1\\$3
+.	ie '\\$1'' \\A'\\*(#'\\$3
+.	el         \\A'\\*(#'\\X'PDFMark: Bookmark \\n(#L \\$1'\\$1\\$3
 .. \}
 .el \{\
 .
@@ -519,8 +572,8 @@
 .\" Anchor: HTML
 .nop .if r ps4html .rm # \" HACK: Fix pre-grohtml(1)
 .if '\*(.T'html' \{ .am #
-.	ie '\\$1\\$3'' \X'html:<a name="\\*($2"></a>'\c
-.	el             \X'html:<a name="\\*($2">'\\$1\X'html:</a>'\\$3
+.	ie '\\$1\\$3'' \X'html:<a name="\\*(#"></a>'\c
+.	el             \X'html:<a name="\\*(#">'\\$1\X'html:</a>'\\$3
 .. \}
 .
 .\" Anchor: PDF
@@ -528,15 +581,15 @@
 .nop .ds PDFBOOKMARK.VIEW /XYZ 0 \\n[PDFPAGE.Y] u 0
 .nop .ds PDFHREF.VIEW     /XYZ 0 \\n[PDFPAGE.Y] u 0
 .am #
-.	ie '\\$1'' .pdfhref M -N "\\*($2"
-.	el         .pdfhref O -T "\\*($2" \\n(#L "\\$1"
+.	ie '\\$1'' .pdfhref M -N "\\*(#"
+.	el         .pdfhref O -T "\\*(#" \\n(#L "\\$1"
 .	if !'\\$1\\$3'' \&\\$1\\$3
 .. \}
 .
 .\}
 .\" Anchor: Footer
 .am #
-.	rm $2
+.	rm #
 .	ig >>
 .	>>
 ..
