@@ -33,19 +33,24 @@
 '			ft \\n(.f
 '			if \\n(.u 'fi
 '			hy
+'			lg 1
 '			do hy \\n[.hy]
+'			do lg \\n[.lg]
+'			do kern \\n[.kern]
 .		>>
 '		nf
 '		nh
+'		lg 0
 '		ft CW
-'		do 'if \n[.meta]=1 \X'meta: begin code \\$1'
+'		do kern 0
+'		do if \n[.meta]=1 \X'meta: begin code \\$1'
 '		tr `\`'\*'^\*^~\*~-\*-
 '	\}
 '
 '	\" End block
 '	el \{\
 '		tr ``''^^~~--
-'		do 'if \n[.meta]=1 \X'meta: end code'
+'		do if \n[.meta]=1 \X'meta: end code'
 '		`
 '		rm `
 '		rr ``
