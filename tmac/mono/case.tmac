@@ -1,0 +1,111 @@
+.if \n(!>0 .nx
+.
+.\" NOTE: The !^B register serves a dual-purpose:
+.\"
+.\"   1. Guarding against circular inclusion (above)
+.\"   2. Flagging "pass-by-reference" usage in a
+.\"      throwaway register (definitions below).
+.\"
+.\" The latter uses a value of 2 to indicate truthfulness, as opposed
+.\" to the conventional 1 or 0 (since `\n[undefined-register]` == 0).
+.nr ! 1
+.
+.so ./mono/shims.tmac
+.
+.
+.\" Print arguments in uppercase.
+.\"
+.\" If the first argument is \&, the second argument is interpreted
+.\" as the name of a string (or diversion) to convert the casing of.
+.\"
+.\" Usage:
+.\"     .!! [TEXT]
+.\"     .!! \& [VAR-NAME]
+.\"
+.\" Example:
+.\"     .!! Synopsis
+.\"     .!! See also
+.\"     .!! \& doc:title
+.\"
+.\" Uses:
+.\"     \*($*
+.\"
+.\" Clobbers:
+.\"     \*(!^B
+.\"     \n(!^B
+.de !!
+.	\" Use Groff's .stringup request if available
+.	if d stringup \{\
+.		if '\&'\\$1' .if d \\$2 \{\
+.			stringup \\$2
+.			return
+.		\}
+.		ds ! \\$*
+.		stringup !
+\&\\*(!
+.		rm !
+.		return
+.	\}
+.
+.	\" Modify by reference
+.	if '\&'\\$1' if d \\$2 \{\
+.		nr ! 2
+.		di !
+.	\}
+.	tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
+.	tr \(*a\(*A\(*b\(*B\(*g\(*G\(*d\(*D\(*e\(*E\(*z\(*Z\(*y\(*Y\(*h\(*H\(*i\(*I\(*k\(*K\(*l\(*L\(*m\(*M
+.	tr \(*n\(*N\(*c\(*C\(*o\(*O\(*p\(*P\(*r\(*R\(*s\(*S\(*t\(*T\(*u\(*U\(*f\(*F\(*x\(*X\(*q\(*Q\(*w\(*W
+\*($*
+.	tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
+.	tr \(*a\(*a\(*b\(*b\(*g\(*g\(*d\(*d\(*e\(*e\(*z\(*z\(*y\(*y\(*h\(*h\(*i\(*i\(*k\(*k\(*l\(*l\(*m\(*m
+.	tr \(*n\(*n\(*c\(*c\(*o\(*o\(*p\(*p\(*r\(*r\(*s\(*s\(*t\(*t\(*u\(*u\(*f\(*f\(*x\(*x\(*q\(*q\(*w\(*w
+.	if \\n(!=2 .di
+.	nr ! 1
+..
+.
+.
+.\" Print arguments in lowercase.
+.\"
+.\" Usage:
+.\"     '.. [TEXT]
+.\"     '.. \& [VAR-NAME]
+.\"
+.\" Example:
+.\"     '.. LOUD NOISES
+.\"     '.. \& DOC*TITLE
+.\"
+.\" Uses:
+.\"     \*($*
+.\"
+.\" Clobbers:
+.\"     \*(!^B
+.\"     \n(!^B
+.de ..
+.	\" Use Groff's .stringdown request if available
+.	if d stringdown \{\
+.		if '\&'\\$1' .if d \\$2 \{\
+.			stringdown \\$2
+.			return
+.		\}
+.		ds ! \\$*
+.		stringdown !
+\&\\*(!
+.		rm !
+.		return
+.	\}
+.
+.	\" Modify by reference
+.	if '\&'\\$1' if d \\$2 \{\
+.		nr ! 2
+.		di !
+.	\}
+.	tr AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
+.	tr \(*A\(*a\(*B\(*b\(*G\(*g\(*D\(*d\(*E\(*e\(*Z\(*z\(*Y\(*y\(*H\(*h\(*I\(*i\(*K\(*k\(*L\(*l\(*M\(*m
+.	tr \(*N\(*n\(*C\(*c\(*O\(*o\(*P\(*p\(*R\(*r\(*S\(*s\(*T\(*t\(*U\(*u\(*F\(*f\(*X\(*x\(*Q\(*q\(*W\(*w
+\*($*
+.	tr AABBCCDDEEFFGGHHIIJJKKLLMMNNOOPPQQRRSSTTUUVVWWXXYYZZ
+.	tr \(*A\(*A\(*B\(*B\(*G\(*G\(*D\(*D\(*E\(*E\(*Z\(*Z\(*Y\(*Y\(*H\(*H\(*I\(*I\(*K\(*K\(*L\(*L\(*M\(*M
+.	tr \(*N\(*N\(*C\(*C\(*O\(*O\(*P\(*P\(*R\(*R\(*S\(*S\(*T\(*T\(*U\(*U\(*F\(*F\(*X\(*X\(*Q\(*Q\(*W\(*W
+.	if \\n(!=2 .di
+.	nr ! 1
+..

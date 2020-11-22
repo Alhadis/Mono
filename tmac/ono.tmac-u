@@ -1,0 +1,14 @@
+.\" -*- nroff -*- vim:set ft=nroff:
+.
+.so mono/$0.tmac
+.so mono/chars.tmac
+.so mono/fonts.tmac
+.so mono/dates.tmac
+.so mono/underline.tmac
+.so mono/code-blocks.tmac
+.so mono/lists.tmac
+.so mono/strings.tmac
+.so mono/shims.tmac
+.so mono/case.tmac
+.so mono/hyperlinks.tmac
+.so mono/anchors.tmac

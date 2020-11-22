@@ -17,6 +17,7 @@ package-lock.json
 /test.*
 
 # Project-specific
+ono.tmac
 /*.cat
 /*.dit
 /*.ditroff
