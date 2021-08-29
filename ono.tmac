@@ -1,0 +1,862 @@
+.\" -*- nroff -*- vim:set ft=nroff fdm=marker:
+.
+.\" $0: Flavour of troff(1) processing the document
+.ds $0 unknown
+.ft R
+.ie \n(.f=0 .ds $0 mandoc
+.el \{\
+.	ft
+.	ie 0<>1 .ds $0 heirloom
+.	el .ie \w,\X'# Ignore',>0 .ds $0 otroff
+.	el .ie !'\n[.s]'\n(.s' \{\
+.		ds $0 ditroff
+.		if \n(.C=1 .do ds $0 groff
+.	\}
+.	el .if \n(.g=1 .ds $0 groff
+.\}
+.
+.
+.\" =========================[ CHARACTERS ]========================={{{1
+.\" ASCII characters which are harder to typeset than you'd think
+.ie '\*($0'heirloom' \{\
+.	ds ^ \U'5E'
+.	ds ~ \U'7E'
+.	ds ' \U'27'
+.	ds - \U'2D'
+.	if !'\*(.T'html' .if t .ds - \(hy
+.\}
+.el .ie '\*($0'otroff' \{\
+.	ds ^ ^
+.	ds ~ ~
+.	ds ' '
+.	ds - \(hy
+.\}
+.el .ie n \{\
+.	ds ^ \N'94'
+.	ds ~ \N'126'
+.	ds ' \N'39'
+.	ds - \N'45'
+.\}
+.el \{\
+.	ds ^ \N'0'
+.	ds ~ \N'1'
+.	ds ' \N'8'
+.	ds - \N'45'
+.\}
+.
+.
+.\" ===========================[ FONTS ]============================{{{1
+.
+.\" Adaptive monospace fonts. Designed to offer authors improved control
+.\" over the appearance of literal text in both the terminal and typeset
+.\" output.
+.\"
+.\"  ┌───────┬──────────┬──────────┬──────────────────────────────────┐
+.\"  │ Mono  │ nroff(1) │ troff(1) │ Use for...                       │
+.\"  ╞═══════╪══════════╪══════════╪══════════════════════════════════╡
+.\"  │ \*(CW │ \fR      │ \f(CR    │ Cosmetic effects, literal values │
+.\"  │ \*(C? │ \fI      │ \f(CW    │ Argument names, variable names   │
+.\"  │ \*(C! │ \fB      │ \f(CR    │ Literal text                     │
+.\"  │ \*(CI │ \f(CI    │ \f(CI    │ Italic monospace                 │
+.\"  │ \*(CB │ \f(CB    │ \f(CB    │ Bold monospace                   │
+.\"  │ \*(CE │ \f(BI    │ \f[CBI]  │ Bold and italic monospace        │
+.\"  └───────┴──────────┴──────────┴──────────────────────────────────┘
+.\"
+.ie t \{\
+.	ds C? \\f(CR
+.	ds C! \\f(CR
+.	ds CW \\f(CR
+.	ds CI \\f(CI
+.	ds CB \\f(CB
+.	ie \\n(.g .ds CE \\f[CBI]
+.	el        .ds CE \\f(CB
+.\}
+.el \{\
+.	ds C? \\fI
+.	ds C! \\fB
+.	ds CW \\f1
+.	ds CI \\fI
+.	ds CB \\fB
+.	ds CE \\f(BI
+.\}
+.
+.\" Set font's typeface and point-size properties
+.de FONT \" [SIZE] [NAME]
+.	FO \\$1 \\$2
+.	.
+.	ig NT
+.	NT
+..
+.de FO
+.	\" Called in compatibility-mode
+.	ie 'NT'\\$1' \
+.		FO \\$2 \\$3
+.	el \{\
+.		ps \\$1
+.		vs \\$1
+.		if !''\\$2' .ft \\$2
+'	\}
+..
+.
+.
+.\" ===========================[ DATES ]============================{{{1
+.\" Current year
+.nr YR 1900+\n(yr
+.
+.\" Full month names
+.ie     \n(mo=1  .ds %M January
+.el .ie \n(mo=2  .ds %M February
+.el .ie \n(mo=3  .ds %M March
+.el .ie \n(mo=4  .ds %M April
+.el .ie \n(mo=5  .ds %M May
+.el .ie \n(mo=6  .ds %M June
+.el .ie \n(mo=7  .ds %M July
+.el .ie \n(mo=8  .ds %M August
+.el .ie \n(mo=9  .ds %M September
+.el .ie \n(mo=10 .ds %M October
+.el .ie \n(mo=11 .ds %M November
+.el .if \n(mo=12 .ds %M December
+.
+.\" Abbreviated month names
+.ie     \n(mo=1  .ds %m Jan
+.el .ie \n(mo=2  .ds %m Feb
+.el .ie \n(mo=3  .ds %m Mar
+.el .ie \n(mo=4  .ds %m Apr
+.el .ie \n(mo=5  .ds %m May
+.el .ie \n(mo=6  .ds %m Jun
+.el .ie \n(mo=7  .ds %m Jul
+.el .ie \n(mo=8  .ds %m Aug
+.el .ie \n(mo=9  .ds %m Sep
+.el .ie \n(mo=10 .ds %m Oct
+.el .ie \n(mo=11 .ds %m Nov
+.el .if \n(mo=12 .ds %m Dec
+.
+.\" Day of the week (Full)
+.ie     \n(dw=1 .ds %D Sunday
+.el .ie \n(dw=2 .ds %D Monday
+.el .ie \n(dw=3 .ds %D Tuesday
+.el .ie \n(dw=4 .ds %D Wednesday
+.el .ie \n(dw=5 .ds %D Thursday
+.el .ie \n(dw=6 .ds %D Friday
+.el .if \n(dw=7 .ds %D Saturday
+.
+.\" Day of the week (Abbreviated)
+.ie     \n(dw=1 .ds %d Sun
+.el .ie \n(dw=2 .ds %d Mon
+.el .ie \n(dw=3 .ds %d Tue
+.el .ie \n(dw=4 .ds %d Wed
+.el .ie \n(dw=5 .ds %d Thu
+.el .ie \n(dw=6 .ds %d Fri
+.el .if \n(dw=7 .ds %d Sat
+.
+.\" Day of the month with ordinal suffix: 1st, 2nd, 3rd...
+.ie ((\n(dy>10)&(\n(dy<20)) .ds dy \n(dyth
+.el .ie (\n(dy%10)=1        .ds dy \n(dyst
+.el .ie (\n(dy%10)=2        .ds dy \n(dynd
+.el .ie (\n(dy%10)=3        .ds dy \n(dyrd
+.el                         .ds dy \n(dyth
+.
+.
+.\" ======================[ UNDERLINED TEXT ]======================={{{1
+.\" .UL -- Proper underlined text.
+.\"
+.\" Usage:
+.\"     .UL [TEXT]
+.\"     .UL [TEXT] [AFFIX]
+.\"     .UL [PREFIX] [TEXT] [AFFIX]
+.\"
+.\" Uses:
+.\"     \*($0
+.\"
+.\" Clobbers:
+.\"     \*(U^B \*(U^C \*(U^E
+.\"     \n(U^B
+.de UL
+'	\" Temporarily disable no-fill mode
+'	nr U 0
+'	if \\n(.u=0 \{\
+'		nr U 1
+'		fi
+'	\}
+'
+'	\" Resolve argument order
+'	ds U \\$1
+'	ds U \\$2
+'	ds U \\$3
+'	if \\n(.$<3 \{\
+'		ds U \&
+'		ds U \\$1
+'		ds U \&\\$2
+'	\}
+'
+'	\" Nroff
+'	ie n \{\
+\\*(U
+'		cu 1
+\h'-1n'\\*(U\h'-1n'
+\\*(U
+'	\}
+'
+'	\" Troff
+'	el \{\
+'		ie '\\*($0'otroff' \\*(U\l'\w,\\*(U,u\(ul'\h'-\w,\\*(U,u'\\*(U\\*(U
+'		el \\*(U\D'l \w,\\*(U,u 0u'\h'-\w,\\*(U,u'\\*(U\\$3
+'	\}
+'	
+'	\" Restore no-fill mode
+'	if \\n(U=1 \{\
+'		rr U
+.		nf
+'	\}
+'
+'	\" Clean up
+'	rm U
+'	rm U
+'	rm U
+..
+.
+'\" Spoon-feed mandoc(1), which doesn't grok underlines or macros very well
+.if '\*($0'mandoc' \{\
+.de UL
+.	ie     \\n(.$=1 \\fI\\$1\\fP
+.	el .ie \\n(.$=2 \\fI\\$1\\fP\\$2
+.	el .ie \\n(.$>2 \\$1\\fI\\$2\\fP\\$3
+..
+.\}
+.
+.
+.\" ========================[ CODE BLOCKS ]========================={{{1
+.\" Current block's indentation amount. Must be above zero.
+.nr `` 0
+.
+.\" .`` -- Indented code block, optionally tagged with a format identifier.
+.\"
+.\" Usage:
+.\"     .`` [SYNTAX] [INDENT 6m]
+.\"     \& Contents
+.\"     .``
+.\"
+.\" Examples:
+.\"     .`` js
+.\"     import {readLines} from "eal/index.mjs";
+.\"     .``
+.\"
+.\" Modifies:
+.\"     \n(`` -- Set to INDENT parameter (or 6m if omitted)
+.\"
+.\" Clobbers:
+.\"     \*(`^B
+.de ``
+'	\" Begin block
+'	ie !\\n(`` \{\
+.		br
+'		ie \\$2>1 'nr `` \\$2
+'		el        'nr `` 6
+'		in +\\n(``n
+'		de ` >>
+'			in -\\n(``
+'			ft \\n(.f
+'			if \\n(.u 'fi
+'			hy
+'			lg 1
+'			do hy \\n[.hy]
+'			do lg \\n[.lg]
+'			do kern \\n[.kern]
+.		>>
+'		nf
+'		nh
+'		lg 0
+'		ft CW
+'		do kern 0
+'		do if \n[.meta]=1 \X'meta: begin code \\$1'
+'		tr `\`'\*'^\*^~\*~-\*-
+'	\}
+'
+'	\" End block
+'	el \{\
+'		tr ``''^^~~--
+'		do if \n[.meta]=1 \X'meta: end code'
+'		`
+'		rm `
+'		rr ``
+.		br
+'	\}
+..
+.
+.
+.\" ===========================[ LISTS ]============================{{{1
+.\" Macros for marking up lists, both ordered and unordered.
+.
+.nr [[ 0     \" List level
+.nr [~ 6n    \" List indent
+.nr *  1     \" List counter
+.nr *~ 1     \" Marker offset
+.ds *% \(bu  \" Marker string
+.
+.\" Begin a list item. May be used outside of a .[[ call.
+.\"
+.\" Usage:
+.\"     .* Item A
+.\"     .* Item B
+.\"     .  br
+.\"     Nested list:
+.\"     .  [[
+.\"     .      * Nested list item 1
+.\"     .      * Nested list item 2
+.\"     .      * ...
+.\"     .  ]]
+.\"     Some sidenote about the list.
+.\"     .* Item C, etc
+.\"
+.\" Modifies:
+.\"     \n* -- Increments counter register
+.\"
+.\" Clobbers:
+.\"     \*(*^B
+.de *
+.	br
+\h'-\\n(*~u-\\w,\\*(*%,u'\\*(*%\h'\\n(*~u'\*($*
+.	ds * \\g*
+.	af * 1
+.	nr * \\n*+1
+.	af * \\*(*
+.	rm *
+..
+.
+.\" Begin list.
+.\"
+.\" Modifies:
+.\"     \n([[ -- Increments and decrements the level of nesting.
+.\"     \n*   -- Resets counter register
+.\"     .]]   -- Temporarily redefined whilst list is open
+.\"
+.\" Clobbers:
+.\"     \*([^E \*(^E{0..9a..zA..Z}
+.\"     \n([^E
+.de [[
+.	\" Compute an internal ID for the current depth
+.	ie \\n([[<10 .ds [ \\n([[
+.	el \{\
+.		ie \\n([[<36 \{\
+.			nr [ \\n([[-9
+.			af [ a
+.			ds [ \\n([
+.		\}
+.		el .ie \\n([[<62 \{\
+.			nr [ \\n([[-35
+.			af [ A
+.			ds [ \\n([
+.		\}
+.		\" 61 levels of nesting is enough
+.		el .ds [ Z
+.		rr [
+.	\}
+.
+.	\" Save format of counter register
+.	ds * \\g*
+.	af * 1
+.
+.	\" Define callback to recover current state
+.	rn ]] \\*([
+.	de ]] >>
+.		nr [[ \\n([[-1
+.		nr *  \\n*
+.		af *  \\*(*
+.		ds *% \\\*(*%
+.		in \\n(.iu
+.		rn \\*([ ]]
+.	>>
+.
+.	\" Apply new state
+.	nr [[ \\n([[+1
+.	nr * 1
+.	af * \\*(*
+.	in +\\n([~u
+.	rm *
+.	rm [
+..
+.
+.
+.\" ====================[ STRING MANIPULATION ]====================={{{1
+.
+.\" Store the character count of $2 in register $1
+.\"
+.\" Usage:
+.\"     .$# [OUT-NR] [TEXT]
+.\"
+.\" Uses:
+.\"     \*$0
+.de $#
+.	if '\*($0'groff' \{\
+.		length \\$1 \\$2
+.		return
+.	\}
+.	ft CW
+.	cs \\n(.f 36
+.	nr \\$1 \\w'\\$2'/\\w'X'
+.	cs \\n(.f
+.	ft
+..
+.
+.\" Convert a string to a format suitable for an internal identifier
+.\"
+.\" Usage:
+.\"     .SLUG [TEXT] [OUT-STR]
+.\" 
+.\" Example:
+.\"     .SLUG " Here's  an ""ID"" string ++1 2 3_4 5 6 7 8 9" xy
+.\"     \*(xy => heres-an-id-string-1-2-3-4-5-6-7-8-9
+.\"
+.\" Uses:
+.\"     '..
+.\"     .ev 1
+.\"
+.\" Clobbers:
+.\"     \*(~^B \*(~^C \*(~^E \*(^F
+.\"
+.\" Bugs:
+.\"     - Currently doesn't work in GNU Troff
+.de SLUG
+.	SL "\\$2" \\$3
+.	ig UG
+.	UG
+..
+.
+.de SL
+.	ie \\n(.$<3 \
+.		SL UG "\\$1" \\$2
+.
+.	el \{\
+.		ev 1
+.
+.		\" Callback to restore prior state
+.		de ~ >>
+.			ad \\n(.j
+.			ll \\n(.l
+.			do hy \\n[.hy]
+.			do warn \\n[.warn]
+.		>>
+.
+.		\" Smash input into separate pieces (1 word/line)
+.		na
+.		nh
+.		ll 0
+.		do warn 0
+.		ds \\$2
+.		de ~ >>
+.			di
+.			ie \\\\n(dl>0 \{\
+.				if !'\\\\*(\\$2'' .as \\$2 -
+.				as \\$2 \\\\*(~
+.			\}
+.			br
+.			di ~
+.			dt 1 ~
+.		>>
+.
+.		\" s/[^-a-z]//g and convert to lowercase
+.		tr '\&"\&\(aq\&\(lq\&\(rq\&\(oq\&\(cq\&\(aa\&\(ga\&
+.		tr "\&!\&#\&$\&%\&&\&(\&)\&*\&+\&,\&.\&/\&:\&;\&<\&=\&>\&?\&@\&[\&\e\&]\&^\&`\&{\&|\&}\&~\&
+.		tr \(hy-\(mi-\(en-\(em-_-
+.		di ~
+.		di ~
+.		dt 1 ~
+\c
+.		.. "\\$1"
+.		di
+.		di
+.
+.		\" Clean up
+.		tr ''""\(aq\(aq\(lq\(lq\(rq\(rq\(oq\(oq\(cq\(cq\(aa\(aa\(ga\(ga
+.		tr !!##$$%%&&(())**++,,..//::;;<<==>>??@@[[\e\e]]^^``{{||}}~~
+.		tr \--\(mi\(mi\(en\(en\(em\(em__
+.		rm ~
+.		rm ~
+.		rm ~
+.		rm ~
+.		ev
+.	\}
+..
+.
+.
+.\" =======================[ COMPATIBILITY ]========================{{{1
+.\" Crude shims for $* and $@, used internally by Mono.
+.\" Doesn't support inline expansion; i.e., stuff like:
+.\"
+.\"    .XY a \\*($* b
+.\"
+.\" Clobbers: \n($* \n($@
+.\"           \*($* \*($@
+.\"
+.if \n($*>0 .nx
+.if \n($@>0 .nx
+.
+.nr $* 2
+.nr $@ 2
+.de $*
+.	if !'\\$*'1 2 3'       .nr $* 1
+.	if !'\\$@'"1" "2" "3"' .nr $@ 1
+..
+.$* 1 2 3
+.ds $* \\\\$*
+.ds $@ \\\\$@
+.if \n($*=1 \{ .de $*
+\c
+\.ie     \\\\n(.$=1 \\\\$1\c
+\.el .ie \\\\n(.$=2 \\\\$1 \\\\$2\c
+\.el .ie \\\\n(.$=3 \\\\$1 \\\\$2 \\\\$3\c
+\.el .ie \\\\n(.$=4 \\\\$1 \\\\$2 \\\\$3 \\\\$4\c
+\.el .ie \\\\n(.$=5 \\\\$1 \\\\$2 \\\\$3 \\\\$4 \\\\$5\c
+\.el .ie \\\\n(.$=6 \\\\$1 \\\\$2 \\\\$3 \\\\$4 \\\\$5 \\\\$6\c
+\.el .ie \\\\n(.$=7 \\\\$1 \\\\$2 \\\\$3 \\\\$4 \\\\$5 \\\\$6 \\\\$7\c
+\.el .ie \\\\n(.$=8 \\\\$1 \\\\$2 \\\\$3 \\\\$4 \\\\$5 \\\\$6 \\\\$7 \\\\$8\c
+\.el .if \\\\n(.$>8 \\\\$1 \\\\$2 \\\\$3 \\\\$4 \\\\$5 \\\\$6 \\\\$7 \\\\$8 \\\\$9\c
+.. \}
+.if \n($@=1 \{ .de $@
+\c
+\.ie     \\\\n(.$=1 \&"\\\\$1"\c
+\.el .ie \\\\n(.$=2 \&"\\\\$1" "\\\\$2"\c
+\.el .ie \\\\n(.$=3 \&"\\\\$1" "\\\\$2" "\\\\$3"\c
+\.el .ie \\\\n(.$=4 \&"\\\\$1" "\\\\$2" "\\\\$3" "\\\\$4"\c
+\.el .ie \\\\n(.$=5 \&"\\\\$1" "\\\\$2" "\\\\$3" "\\\\$4" "\\\\$5"\c
+\.el .ie \\\\n(.$=6 \&"\\\\$1" "\\\\$2" "\\\\$3" "\\\\$4" "\\\\$5" "\\\\$6"\c
+\.el .ie \\\\n(.$=7 \&"\\\\$1" "\\\\$2" "\\\\$3" "\\\\$4" "\\\\$5" "\\\\$6" "\\\\$7"\c
+\.el .ie \\\\n(.$=8 \&"\\\\$1" "\\\\$2" "\\\\$3" "\\\\$4" "\\\\$5" "\\\\$6" "\\\\$7" "\\\\$8"\c
+\.el .if \\\\n(.$>8 \&"\\\\$1" "\\\\$2" "\\\\$3" "\\\\$4" "\\\\$5" "\\\\$6" "\\\\$7" "\\\\$8" "\\\\$9"\c
+.. \}
+.
+.
+.\" ======================[ CASE CONVERSION ]======================={{{1
+.
+.\" Print arguments in uppercase.
+.\"
+.\" If the first argument is \&, the second argument is interpreted
+.\" as the name of a string (or diversion) to convert the casing of.
+.\"
+.\" Usage:
+.\"     .!! [TEXT]
+.\"     .!! \& [VAR-NAME]
+.\"
+.\" Example:
+.\"     .!! Synopsis
+.\"     .!! See also
+.\"     .!! \& doc:title
+.\"
+.\" Uses:
+.\"     \*($*
+.\"
+.\" Clobbers:
+.\"     \*(!^B
+.\"     \n(!^B
+.de !!
+.	\" Use Groff's .stringup request if available
+.	if d stringup \{\
+.		if '\&'\\$1' .if d \\$2 \{\
+.			stringup \\$2
+.			return
+.		\}
+.		ds ! \\$*
+.		stringup !
+\&\\*(!
+.		rm !
+.		return
+.	\}
+.
+.	\" Modify by reference
+.	if '\&'\\$1' if d \\$2 \{\
+.		nr ! 1
+.		di !
+.	\}
+.	tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
+.	tr \(*a\(*A\(*b\(*B\(*g\(*G\(*d\(*D\(*e\(*E\(*z\(*Z\(*y\(*Y\(*h\(*H\(*i\(*I\(*k\(*K\(*l\(*L\(*m\(*M
+.	tr \(*n\(*N\(*c\(*C\(*o\(*O\(*p\(*P\(*r\(*R\(*s\(*S\(*t\(*T\(*u\(*U\(*f\(*F\(*x\(*X\(*q\(*Q\(*w\(*W
+\*($*
+.	tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
+.	tr \(*a\(*a\(*b\(*b\(*g\(*g\(*d\(*d\(*e\(*e\(*z\(*z\(*y\(*y\(*h\(*h\(*i\(*i\(*k\(*k\(*l\(*l\(*m\(*m
+.	tr \(*n\(*n\(*c\(*c\(*o\(*o\(*p\(*p\(*r\(*r\(*s\(*s\(*t\(*t\(*u\(*u\(*f\(*f\(*x\(*x\(*q\(*q\(*w\(*w
+.	if \\n(!=1 .di
+.	rr !
+..
+.
+.\" Print arguments in lowercase.
+.\"
+.\" Usage:
+.\"     '.. [TEXT]
+.\"     '.. \& [VAR-NAME]
+.\"
+.\" Example:
+.\"     '.. LOUD NOISES
+.\"     '.. \& DOC*TITLE
+.\"
+.\" Uses:
+.\"     \*($*
+.\"
+.\" Clobbers:
+.\"     \*(!^B
+.\"     \n(!^B
+.de ..
+.	\" Use Groff's .stringdown request if available
+.	if d stringdown \{\
+.		if '\&'\\$1' .if d \\$2 \{\
+.			stringdown \\$2
+.			return
+.		\}
+.		ds ! \\$*
+.		stringdown !
+\&\\*(!
+.		rm !
+.		return
+.	\}
+.
+.	\" Modify by reference
+.	if '\&'\\$1' if d \\$2 \{\
+.		nr ! 2
+.		di !
+.	\}
+.	tr AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
+.	tr \(*A\(*a\(*B\(*b\(*G\(*g\(*D\(*d\(*E\(*e\(*Z\(*z\(*Y\(*y\(*H\(*h\(*I\(*i\(*K\(*k\(*L\(*l\(*M\(*m
+.	tr \(*N\(*n\(*C\(*c\(*O\(*o\(*P\(*p\(*R\(*r\(*S\(*s\(*T\(*t\(*U\(*u\(*F\(*f\(*X\(*x\(*Q\(*q\(*W\(*w
+\*($*
+.	tr AABBCCDDEEFFGGHHIIJJKKLLMMNNOOPPQQRRSSTTUUVVWWXXYYZZ
+.	tr \(*A\(*A\(*B\(*B\(*G\(*G\(*D\(*D\(*E\(*E\(*Z\(*Z\(*Y\(*Y\(*H\(*H\(*I\(*I\(*K\(*K\(*L\(*L\(*M\(*M
+.	tr \(*N\(*N\(*C\(*C\(*O\(*O\(*P\(*P\(*R\(*R\(*S\(*S\(*T\(*T\(*U\(*U\(*F\(*F\(*X\(*X\(*Q\(*Q\(*W\(*W
+.	if \\n(!=2 .di
+.	nr ! 1
+..
+.
+.
+.\" ============================[ MAPS ]============================{{{1
+.\" Basic key/value hash structures in pure Roff.
+.\" 
+.\" Provides a means of storing values under names longer than 2 characters,
+.\" but makes no assumptions about compatibility mode and/or implementation.
+.
+.\" Counter used when generating IDs automatically
+.nr # 1
+.
+.\" Set register $3 to 1 if a key named $2 exists in $1
+.\"
+.\" Usage:
+.\"    .?# [MAP-NAME] [KEY] [OUT-NR]
+.\"
+.\" Examples:
+.\"    .?# COLOURS red HAVE-RED?
+.\"    \n[HAVE-RED?] => 1
+.de ?#
+.	if !'\\$3'' .rr \\$3
+..
+.
+.\" Set register $3 to 1 if $1 has an entry with a value of $2.
+.\"
+.\" Usage:
+.\"    .#? [MAP-NAME] [VALUE] [OUT-NR]
+.\"
+.\" Examples:
+.\"    .#? COLOURS "#ff0000" HAVE-RED?
+.\"    \n[HAVE-RED?] => 1
+.de #?
+.	if !'\\$3'' .rr \\$3
+..
+.
+.\" Retrieve an entry named $2 stored in $1.
+.\"
+.\" Usage:
+.\"     .#< [MAP-NAME] [KEY] [OUT-STR]
+.\"
+.\" Example:
+.\"     .#< COLOURS red HEX-CODE
+.\"     \*[HEX-CODE] => "#ff0000"
+.de #<
+.	if !'\\$3'' .rm \\$3
+..
+.
+.\" Store an entry in $1 named $2 with value $3.
+.\"
+.\" Usage:
+.\"     .#> [MAP-NAME] [KEY] [VALUE]
+.\"
+.\" Example:
+.\"     .#> COLOURS red "#ff0000"
+.de #>
+.	am ?# >>
+.	if '\\\\$1'\\$1' .if '\\\\$2'\\$2' .nr \\\\$3 1
+.	>>
+.	am #? >>
+.	if '\\\\$1'\\$1' .if '\\\\$2'\\$3' .nr \\\\$3 1
+.	>>
+.	am #< >>
+.	if '\\\\$1'\\$1' .if '\\\\$2'\\$2' .ds \\\\$3 \\$3
+.	>>
+..
+.
+.\" Assign a unique identifier to $1
+.\"
+.\" Usage:
+.\"     .#+ [VALUE] [ID] [OUT-STR]
+.\"
+.\" Clobbers:
+.\"     \n($?
+.de #+
+.	#? ID "\\$2" $?
+.
+.	\" ID already exists
+.	ie \\n($?=1 \{\
+.		#? ID "\\$2-\\n(#" $?
+.
+.		\" Suffixed ID exists too; increment and try again
+.		ie \\n($?=1 \{\
+.			nr # \\n(#+1
+.			#+ "\\$1" "\\$2"
+.		\}
+.
+.		\" This suffix is free; use it
+.		el \{\
+.			#> ID "\\$1" "\\$2-\\n(#"
+.			if !'\\$3'' .#< ID "\\$1" \\$3
+.		\}
+.	\}
+.
+.	\" ID not yet allocated; use it
+.	el \{\
+.		#> ID "\\$1" "\\$2"
+.		if !'\\$3'' .#< ID "\\$1" \\$3
+.	\}
+.
+.	\" Clean up
+.	rr $?
+..
+.
+.
+.\" =========================[ HYPERLINKS ]========================={{{1
+.\" .[ -- Format-agnostic hyperlinks
+.\"
+.\" TODO:
+.\" * Document usage.
+.\" * Support Heirloom Doctools:
+.\"     * dpost(1)
+.\"     * dhtml(1)
+.\" * Support Neatroff's neatpdf(1)
+.
+.\" Printed/non-interactive
+.de [
+.	if ']('\\$2' \{\
+.		if !'\\$3'\\$1'         .if !'\\$3'\\$1/' \
+.		if !'\\$3'http://\\$1'  .if !'\\$3'http://\\$1/' \
+.		if !'\\$3'https://\\$1' .if !'\\$3'https://\\$1/' \
+.		if !'\\$3'mailto:\\$1' \{\
+.			ie ')'\\$6' \&\\$1\\$3\\$4\\$5\\$7
+.			el \&\\$1 (\\*([_\\$3\\*(_])\\$5
+.			ig >>
+.		\}
+\&\\*([_\\$1\\*(_]\\$5
+.		ig >>
+.		>>
+.	\}
+.	if ']['\\$2' \{\
+.		ie ']'\\$6' \&\\$1\\$3\\$4\\$5\\$7
+.		el \&\\$1\\$5
+.	\}
+.	if ']<'\\$2' \{\
+.		ie '\\$1'\\$3'  \&\\*([_\\$1\\*(_]\\$5
+.		el .ie '>'\\$6' \&\\$1\\$3\\$4\\$5\\$7
+.		el              \&\\$1 <\\*([_\\$3\\*(_]>\\$5
+.	\}
+.	if '\\$2']<>' \&\\*([_\\$1\\*(_]\\$3
+.	if '\\$2']()' \&\\*([_\\$1\\*(_]\\$3
+.	if '\\$2'][]' \&\\$1\\$3
+.	if '\\$2']'   \&\\$1\\$3
+..
+.if n .ds [_ \fI
+.if n .ds _] \fP
+.
+.\" HTML: Groff
+.nop .if r ps4html .rm [ \" HACK: Fix pre-grohtml(1)
+.if '\*(.T'html' \{ .de [
+.	if ']('\\$2' \{\
+.		ie ')'\\$6' \X'html:<a href="\\$4">'\\$1\X'html:</a>'\\$7
+.		el          \X'html:<a href="\\$3">'\\$1\X'html:</a>'\\$5 \}
+.	if ']['\\$2' \{\
+.		ie ']'\\$6' \X'html:<a href="#\\$4">'\\$1\X'html:</a>'\\$7
+.		el          \X'html:<a href="#\\$3">'\\$1\X'html:</a>'\\$5 \}
+.	if ']<'\\$2' \{\
+.		ie '>'\\$6' \X'html:<a href="mailto:\\$4">'\\$1\X'html:</a>'\\$7
+.		el          \X'html:<a href="mailto:\\$3">'\\$1\X'html:</a>'\\$5 \}
+.	if '\\$2']<>' \X'html:<a href="mailto:\\$1">'\\$1\X'html:</a>'\\$3
+.	if '\\$2']()' \X'html:<a href="\\$1">'\\$1\X'html:</a>'\\$3
+.	if '\\$2'][]' \X'html:<a href="#\\$1">'\\$1\X'html:</a>'\\$3
+.	if '\\$2']'   \X'html:<a href="#\\$1">'\\$1\X'html:</a>'\\$3
+.. \}
+.
+.\" PDF: Groff
+.if '\*(.T'pdf' \{ .de [
+.	if ']('\\$2' \{\
+.		ie ')'\\$6' .nop .pdfhref W -A \&\\$7 -D "\\$4" -- \\$1
+.		el          .nop .pdfhref W -A \&\\$5 -D "\\$3" -- \\$1 \}
+.	if ']['\\$2' \{\
+.		ie ']'\\$6' .nop .pdfhref L -A \&\\$7 -D "\\$4" -- \\$1
+.		el          .nop .pdfhref L -A \&\\$5 -D "\\$3" -- \\$1 \}
+.	if ']<'\\$2' \{\
+.		ie '>'\\$6' .nop .pdfhref W -A \&\\$7 -D "mailto:\\$4" -- \\$1
+.		el          .nop .pdfhref W -A \&\\$5 -D "mailto:\\$3" -- \\$1 \}
+.	if '\\$2']<>' .nop .pdfhref L -A \&\\$3 -D "mailto:\\$1" -- \\$1
+.	if '\\$2']()' .nop .pdfhref W -A \&\\$3 -D "\\$1" -- \\$1
+.	if '\\$2'][]' .nop .pdfhref L -A \&\\$3 -D "\\$1" -- \\$1
+.	if '\\$2']'   .nop .pdfhref L -A \&\\$3 -D "\\$1" -- \\$1 \}
+.. \}
+.
+.
+.\" ===========================[ ANCHORS ]=========================={{{1
+.\" Named destinations for use in document outlines (menus, tables
+.\" of contents, PDF outlines, etc). Complements hyperlink macros.
+.\"
+.\" Uses: \*($0
+.
+.\" Outline level (PDF only)
+.nr #L 0
+.
+.\" Header
+.de #
+.	if \\n(.$=0 .ig >>
+.	ie !'\\$2'' .SLUG "\\$2" #
+.	el \\n(.$=1 .SLUG "\\$1" #
+.	#+ "\\$1" "\\*(#" #
+..
+.
+.\" Body: Heirloom Doctools
+.ie '\*($0'heirloom' \{ .am #
+.	ie '\\$1'' \\A'\\*(#'\\$3
+.	el         \\A'\\*(#'\\X'PDFMark: Bookmark \\n(#L \\$1'\\$1\\$3
+.. \}
+.el \{\
+.
+.\" Body: Printed/non-interactive
+.if !'\*(.T'html' \{\
+.if !'\*(.T'pdf'  \{\
+.am #
+.	if !'\\$1\\$3'' \&\\$1\\$3
+.. \}\}
+.
+.\" Body: HTML
+.nop .if r ps4html .rm # \" HACK: Fix pre-grohtml(1)
+.if '\*(.T'html' \{ .am #
+.	ie '\\$1\\$3'' \X'html:<a name="\\*(#"></a>'\c
+.	el             \X'html:<a name="\\*(#">'\\$1\X'html:</a>'\\$3
+.. \}
+.
+.\" Body: PDF
+.if '\*(.T'pdf' \{\
+.nop .ds PDFBOOKMARK.VIEW /XYZ 0 \\n[PDFPAGE.Y] u 0
+.nop .ds PDFHREF.VIEW     /XYZ 0 \\n[PDFPAGE.Y] u 0
+.am #
+.	ie '\\$1'' .pdfhref M -N "\\*(#"
+.	el         .pdfhref O -T "\\*(#" \\n(#L "\\$1"
+.	if !'\\$1\\$3'' \&\\$1\\$3
+.. \}
+.
+.\}
+.\" Footer
+.am #
+.	rm #
+.	ig >>
+.	>>
+..
