@@ -413,14 +413,13 @@
 .	ft
 ..
 .
-.\" .SLUG -- Convert a string to a format suitable for an internal identifier.
+.\" .~- -- Convert a string to a format suitable for an internal identifier.
 .\"
 .\" Usage:
-.\"     .SLUG  [TEXT] [OUT-STR]
-.\"     .SL UG [TEXT] [OUT-STR]
+.\"     .~- [TEXT] [OUT-STR]
 .\"
 .\" Example:
-.\"     .SLUG " Here's  an ""ID"" string ++1 2 3_4 5 6 7 8 9" xy
+.\"     .~- " Here's  an ""ID"" string ++1 2 3_4 5 6 7 8 9" xy
 .\"     \*(xy => heres-an-id-string-1-2-3-4-5-6-7-8-9
 .\"
 .\" Uses:
@@ -428,70 +427,59 @@
 .\"     .ev 1
 .\"
 .\" Clobbers:
-.\"     \*(~^B \*(~^C \*(~^E \*(^F
+.\"     \*(~^B \*(~^C \*(~^E \*(~^F
 .\"
 .\" Bugs:
 .\"     - Currently doesn't work in GNU Troff
-.de SLUG
-.	SL "\\$2" \\$3
-.	ig UG
-.	UG
-..
+.de ~-
+.	ev 1
 .
-.de SL
-.	ie \\n(.$<3 \
-.		SL UG "\\$1" \\$2
+.	\" Callback to restore prior state
+.	de ~ >>
+.		ad \\n(.j
+.		ll \\n(.l
+.		do hy \\n[.hy]
+.		do warn \\n[.warn]
+.	>>
 .
-.	el \{\
-.		ev 1
-.
-.		\" Callback to restore prior state
-.		de ~ >>
-.			ad \\n(.j
-.			ll \\n(.l
-.			do hy \\n[.hy]
-.			do warn \\n[.warn]
-.		>>
-.
-.		\" Smash input into separate pieces (1 word/line)
-.		na
-.		nh
-.		ll 0
-.		do warn 0
-.		ds \\$2
-.		de ~ >>
-.			di
-.			ie \\\\n(dl>0 \{\
-.				if !'\\\\*(\\$2'' .as \\$2 -
-.				as \\$2 \\\\*(~
-.			\}
-.			br
-.			di ~
-.			dt 1 ~
-.		>>
-.
-.		\" s/[^-a-z]//g and convert to lowercase
-.		tr '\&"\&\(aq\&\(lq\&\(rq\&\(oq\&\(cq\&\(aa\&\(ga\&
-.		tr "\&!\&#\&$\&%\&&\&(\&)\&*\&+\&,\&.\&/\&:\&;\&<\&=\&>\&?\&@\&[\&\e\&]\&^\&`\&{\&|\&}\&~\&
-.		tr \(hy-\(mi-\(en-\(em-_-
-.		di ~
+.	\" Smash input into separate pieces (1 word/line)
+.	na
+.	nh
+.	ll 0
+.	do warn 0
+.	ds \\$2
+.	de ~ >>
+.		di
+.		ie \\\\n(dl>0 \{\
+.			if !'\\\\*(\\$2'' .as \\$2 -
+.			as \\$2 \\\\*(~
+.		\}
+.		br
 .		di ~
 .		dt 1 ~
-\c
-.		.. "\\$1"
-.		di
-.		di
+.	>>
 .
-.		\" Clean up
-.		tr ''""\(aq\(aq\(lq\(lq\(rq\(rq\(oq\(oq\(cq\(cq\(aa\(aa\(ga\(ga
-.		tr !!##$$%%&&(())**++,,..//::;;<<==>>??@@[[\e\e]]^^``{{||}}~~
-.		tr \--\(mi\(mi\(en\(en\(em\(em__
-.		rm ~
-.		rm ~
-.		rm ~
-.		rm ~
-.		ev
-.	\}
+.	\" s/[^-a-z]//g and convert to lowercase
+.	tr '\&"\&\(aq\&\(lq\&\(rq\&\(oq\&\(cq\&\(aa\&\(ga\&
+.	tr "\&!\&#\&$\&%\&&\&(\&)\&*\&+\&,\&.\&/\&:\&;\&<\&=\&>\&?\&@\&[\&\e\&]\&^\&`\&{\&|\&}\&~\&
+.	tr \(hy-\(mi-\(en-\(em-_-
+.	di ~
+.	di ~
+.	dt 1 ~
+\c
+.	.. "\\$1"
+.	di
+.	di
+.
+.	\" Clean up
+.	tr ''""\(aq\(aq\(lq\(lq\(rq\(rq\(oq\(oq\(cq\(cq\(aa\(aa\(ga\(ga
+.	tr !!##$$%%&&(())**++,,..//::;;<<==>>??@@[[\e\e]]^^``{{||}}~~
+.	tr \--\(mi\(mi\(en\(en\(em\(em__
+.	rm ~
+.	rm ~
+.	rm ~
+.	rm ~
+.	ev
 ..
 .
 .
@@ -864,7 +852,7 @@
 .\" Usage:
 .\"     .# [TEXT] [ID] [AFFIX]
 .\"
-.\"   Derive ID from $1 using the .#+ and .SLUG macros:
+.\"   Derive ID from $1 using the .#+ and .~- macros:
 .\"     .# [TEXT-AND-ID]
 .\"     .# [TEXT-AND-ID] "" [AFFIX]
 .\"
@@ -887,8 +875,8 @@
 .\" Header
 .de #
 .	if \\n(.$=0 .ig >>
-.	ie !'\\$2'' .SLUG "\\$2" #
-.	el \\n(.$=1 .SLUG "\\$1" #
+.	ie !'\\$2'' .~- "\\$2" #
+.	el \\n(.$=1 .~- "\\$1" #
 .	#+ "\\$1" "\\*(#" #
 ..
 .
