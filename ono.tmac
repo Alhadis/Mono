@@ -16,7 +16,8 @@
 .\}
 .
 .
-.\" =========================[ CHARACTERS ]========================={{{1
+.\"==============================[ CHARACTERS ]============================={{{1
+.
 .\" ASCII characters which are harder to typeset than you'd think
 .ie '\*($0'heirloom' \{\
 .	ds ^ \U'5E'
@@ -45,23 +46,20 @@
 .\}
 .
 .
-.\" ===========================[ FONTS ]============================{{{1
+.\"================================[ FONTS ]================================{{{1
 .
-.\" Adaptive monospace fonts. Designed to offer authors improved control
-.\" over the appearance of literal text in both the terminal and typeset
-.\" output.
+.\" Adaptive monospace fonts. Provides the author with improved control over the
+.\" appearance of literal text in both terminal output and typeset documents.
 .\"
-.\"  ┌───────┬──────────┬──────────┬──────────────────────────────────┐
-.\"  │ Mono  │ nroff(1) │ troff(1) │ Use for...                       │
-.\"  ╞═══════╪══════════╪══════════╪══════════════════════════════════╡
-.\"  │ \*(CW │ \fR      │ \f(CR    │ Cosmetic effects, literal values │
-.\"  │ \*(C? │ \fI      │ \f(CW    │ Argument names, variable names   │
-.\"  │ \*(C! │ \fB      │ \f(CR    │ Literal text                     │
-.\"  │ \*(CI │ \f(CI    │ \f(CI    │ Italic monospace                 │
-.\"  │ \*(CB │ \f(CB    │ \f(CB    │ Bold monospace                   │
-.\"  │ \*(CE │ \f(BI    │ \f[CBI]  │ Bold and italic monospace        │
-.\"  └───────┴──────────┴──────────┴──────────────────────────────────┘
-.\"
+.\"   Mono    nroff(1)   troff(1)     Use for...
+.\" ------------------------------------------------------------------------
+.\"   \*(CW   \fR        \f(CR        Cosmetic effects, literal values
+.\"   \*(C?   \fI        \f(CW        Argument names, variable names
+.\"   \*(C!   \fB        \f(CR        Literal text
+.\"   \*(CI   \f(CI      \f(CI        Italic monospace
+.\"   \*(CB   \f(CB      \f(CB        Bold monospace
+.\"   \*(CE   \f(BI      \f[CBI]      Bold and italic monospace
+.\" ------------------------------------------------------------------------
 .ie t \{\
 .	ds C? \\f(CR
 .	ds C! \\f(CR
@@ -80,15 +78,25 @@
 .	ds CE \\f(BI
 .\}
 .
-.\" Set font's typeface and point-size properties
-.de FONT \" [SIZE] [NAME]
+.\" .FONT -- Set typeface, point-size and vertical spacing simultaneously.
+.\"
+.\" TODO: Allow size argument to be omitted if name is obviously non-numeric.
+.\"
+.\" Usage:
+.\"     .FONT  [SIZE] [NAME]
+.\"     .FO NT [SIZE] [NAME]
+.\"
+.\" Examples:
+.\"     .FONT 1.5 Helvetica
+.\"     .FONT 12p
+.\"
+.de FONT
 .	FO \\$1 \\$2
 .	.
 .	ig NT
 .	NT
 ..
-.de FO
-.	\" Called in compatibility-mode
+.de FO \" Called in compatibility-mode
 .	ie 'NT'\\$1' \
 .		FO \\$2 \\$3
 .	el \{\
@@ -99,7 +107,8 @@
 ..
 .
 .
-.\" ===========================[ DATES ]============================{{{1
+.\"================================[ DATES ]================================{{{1
+.
 .\" Current year
 .nr YR 1900+\n(yr
 .
@@ -157,7 +166,8 @@
 .el                         .ds dy \n(dyth
 .
 .
-.\" ======================[ UNDERLINED TEXT ]======================={{{1
+.\"===========================[ UNDERLINED TEXT ]==========================={{{1
+.
 .\" .UL -- Proper underlined text.
 .\"
 .\" Usage:
@@ -171,6 +181,10 @@
 .\" Clobbers:
 .\"     \*(U^B \*(U^C \*(U^E
 .\"     \n(U^B
+.\"
+.\" Bugs:
+.\"    - Line-wrapping produces ugly underlines stretching to the left margin of
+.\"      the page: continuous underlining should be restricted to interword gaps
 .de UL
 '	\" Temporarily disable no-fill mode
 '	nr U 0
@@ -225,7 +239,8 @@
 .\}
 .
 .
-.\" ========================[ CODE BLOCKS ]========================={{{1
+.\" ============================[ CODE BLOCKS ]============================={{{1
+.
 .\" Current block's indentation amount. Must be above zero.
 .nr `` 0
 .
@@ -284,7 +299,7 @@
 ..
 .
 .
-.\" ===========================[ LISTS ]============================{{{1
+.\" ===============================[ LISTS ]================================{{{1
 .\" Macros for marking up lists, both ordered and unordered.
 .
 .nr [[ 0     \" List level
@@ -293,7 +308,7 @@
 .nr *~ 1     \" Marker offset
 .ds *% \(bu  \" Marker string
 .
-.\" Begin a list item. May be used outside of a .[[ call.
+.\" .* -- Begin a list item. May be used outside of a .[[ call.
 .\"
 .\" Usage:
 .\"     .* Item A
@@ -323,7 +338,7 @@
 .	rm *
 ..
 .
-.\" Begin list.
+.\" .[[ -- Begin list.
 .\"
 .\" Modifies:
 .\"     \n([[ -- Increments and decrements the level of nesting.
@@ -377,9 +392,9 @@
 ..
 .
 .
-.\" ====================[ STRING MANIPULATION ]====================={{{1
+.\" ========================[ STRING MANIPULATION ]========================={{{1
 .
-.\" Store the character count of $2 in register $1
+.\" .$# -- Store the character count of $2 in register $1
 .\"
 .\" Usage:
 .\"     .$# [OUT-NR] [TEXT]
@@ -398,11 +413,12 @@
 .	ft
 ..
 .
-.\" Convert a string to a format suitable for an internal identifier
+.\" .SLUG -- Convert a string to a format suitable for an internal identifier.
 .\"
 .\" Usage:
-.\"     .SLUG [TEXT] [OUT-STR]
-.\" 
+.\"     .SLUG  [TEXT] [OUT-STR]
+.\"     .SL UG [TEXT] [OUT-STR]
+.\"
 .\" Example:
 .\"     .SLUG " Here's  an ""ID"" string ++1 2 3_4 5 6 7 8 9" xy
 .\"     \*(xy => heres-an-id-string-1-2-3-4-5-6-7-8-9
@@ -479,7 +495,8 @@
 ..
 .
 .
-.\" =======================[ COMPATIBILITY ]========================{{{1
+.\" ===========================[ COMPATIBILITY ]============================{{{1
+.
 .\" Crude shims for $* and $@, used internally by Mono.
 .\" Doesn't support inline expansion; i.e., stuff like:
 .\"
@@ -526,9 +543,9 @@
 .. \}
 .
 .
-.\" ======================[ CASE CONVERSION ]======================={{{1
+.\" ==========================[ CASE CONVERSION ]==========================={{{1
 .
-.\" Print arguments in uppercase.
+.\" .!! -- Print arguments in uppercase.
 .\"
 .\" If the first argument is \&, the second argument is interpreted
 .\" as the name of a string (or diversion) to convert the casing of.
@@ -578,7 +595,7 @@
 .	rr !
 ..
 .
-.\" Print arguments in lowercase.
+.\" '.. -- Print arguments in lowercase.
 .\"
 .\" Usage:
 .\"     '.. [TEXT]
@@ -625,16 +642,16 @@
 ..
 .
 .
-.\" ============================[ MAPS ]============================{{{1
+.\" ================================[ MAPS ]================================{{{1
 .\" Basic key/value hash structures in pure Roff.
-.\" 
+.\"
 .\" Provides a means of storing values under names longer than 2 characters,
 .\" but makes no assumptions about compatibility mode and/or implementation.
 .
 .\" Counter used when generating IDs automatically
 .nr # 1
 .
-.\" Set register $3 to 1 if a key named $2 exists in $1
+.\" .?# -- Set register $3 to 1 if a key named $2 exists in $1
 .\"
 .\" Usage:
 .\"    .?# [MAP-NAME] [KEY] [OUT-NR]
@@ -646,7 +663,7 @@
 .	if !'\\$3'' .rr \\$3
 ..
 .
-.\" Set register $3 to 1 if $1 has an entry with a value of $2.
+.\" .#? -- Set register $3 to 1 if $1 has an entry with a value of $2.
 .\"
 .\" Usage:
 .\"    .#? [MAP-NAME] [VALUE] [OUT-NR]
@@ -658,7 +675,7 @@
 .	if !'\\$3'' .rr \\$3
 ..
 .
-.\" Retrieve an entry named $2 stored in $1.
+.\" .#< -- Retrieve an entry named $2 stored in $1.
 .\"
 .\" Usage:
 .\"     .#< [MAP-NAME] [KEY] [OUT-STR]
@@ -670,7 +687,7 @@
 .	if !'\\$3'' .rm \\$3
 ..
 .
-.\" Store an entry in $1 named $2 with value $3.
+.\" .#> -- Store an entry in $1 named $2 with value $3.
 .\"
 .\" Usage:
 .\"     .#> [MAP-NAME] [KEY] [VALUE]
@@ -689,7 +706,7 @@
 .	>>
 ..
 .
-.\" Assign a unique identifier to $1
+.\" .#+ -- Assign a unique identifier to $1
 .\"
 .\" Usage:
 .\"     .#+ [VALUE] [ID] [OUT-STR]
@@ -727,15 +744,46 @@
 ..
 .
 .
-.\" =========================[ HYPERLINKS ]========================={{{1
-.\" .[ -- Format-agnostic hyperlinks
+.\"==============================[ HYPERLINKS ]============================={{{1
+.
+.\" Strings inserted before and after links rendered by non-interactive mediums
+.if n .ds [_ \fI
+.if n .ds _] \fP
+.
+.\" .[ -- Format-agnostic hyperlinks.
+.\"
+.\" Usage:
+.\"     .[ [TEXT]   "]("  [URL]    ")" [AFFIX]
+.\"     .[ [TEXT]   "]<"  [EMAIL]  ">" [AFFIX]
+.\"     .[ [TEXT]   "]["  [ANCHOR] "]" [AFFIX]
+.\"     .[ [URL]    "]()"              [AFFIX]
+.\"     .[ [EMAIL]  "]<>"              [AFFIX]
+.\"     .[ [ANCHOR] "][]"              [AFFIX]
+.\"     .[ [ANCHOR] "]"                [AFFIX]
+.\"
+.\" Examples:
+.\"     .[ eBay ]( https://ebay.com )
+.\"     .[ Contact ]< contact@author.com >
+.\"     .[ Term ][ term-id ] \" See .#
+.\"
+.\"   Trailing punctuation using the affix parameter:
+.\"     .[ Details ]( " (visit " http://url " for more information)" ) ,
+.\"     .[ Term-ID ][ " (q.v. " term-id ", section 3.2)" ] ,
+.\"     .[ "Send an e-mail" ]< " to " email@address.com "" > .
+.\"
+.\"   Shorthand forms:
+.\"     .[ https://ebay.com ]()   \" Same as .[ https://ebay.com ]( https://ebay.com )
+.\"     .[ foo@bar.com ]<>        \" Same as .[ foo@bar.com ]< foo@bar.com >
+.\"     .[ Term ][]               \" Same as .[ Term ][ Term ]
+.\"     .[ Term ]                 \" As above
+.\"
+.\" Uses:
+.\"     \*([_
+.\"     \*(_]
 .\"
 .\" TODO:
-.\" * Document usage.
-.\" * Support Heirloom Doctools:
-.\"     * dpost(1)
-.\"     * dhtml(1)
-.\" * Support Neatroff's neatpdf(1)
+.\"     * Support Heirloom Doctools' dpost(1) and dhtml(1)
+.\"     * Support Neatroff's neatpdf(1)
 .
 .\" Printed/non-interactive
 .de [
@@ -766,8 +814,6 @@
 .	if '\\$2'][]' \&\\$1\\$3
 .	if '\\$2']'   \&\\$1\\$3
 ..
-.if n .ds [_ \fI
-.if n .ds _] \fP
 .
 .\" HTML: Groff
 .nop .if r ps4html .rm [ \" HACK: Fix pre-grohtml(1)
@@ -805,14 +851,38 @@
 .. \}
 .
 .
-.\" ===========================[ ANCHORS ]=========================={{{1
-.\" Named destinations for use in document outlines (menus, tables
-.\" of contents, PDF outlines, etc). Complements hyperlink macros.
-.\"
-.\" Uses: \*($0
+.\" ==============================[ ANCHORS ]==============================={{{1
 .
 .\" Outline level (PDF only)
 .nr #L 0
+.
+.\" .# -- Declare a named destination such as a heading, symbol definition,
+.\"       navigation landmark, or anything else that needs to be referenced
+.\"       or linked to from somewhere. Contributes to the document outline;
+.\"       i.e., menus, tables of contents, PDF outlines, etc.
+.\"
+.\" Usage:
+.\"     .# [TEXT] [ID] [AFFIX]
+.\"
+.\"   Derive ID from $1 using the .#+ and .SLUG macros:
+.\"     .# [TEXT-AND-ID]
+.\"     .# [TEXT-AND-ID] "" [AFFIX]
+.\"
+.\" Examples:
+.\"     .# SYNOPSIS:
+.\"     .# "Related links" see-also   \" Text that differs noticeably from ID
+.\"     .# "" hidden-anchor
+.\"
+.\" Uses:
+.\"     \*($0
+.\"     \n(#L
+.\"
+.\" Clobbers:
+.\"     \*(#^B
+.\"
+.\" Modifies:
+.\"     \*[PDFBOOKMARK.VIEW]
+.\"     \*[PDFHREF.VIEW]
 .
 .\" Header
 .de #
