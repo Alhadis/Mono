@@ -483,6 +483,156 @@
 .	ev
 ..
 .
+.\" .4@ -- Execute a macro for each item in a space-delimited list.
+.\"
+.\" For each entry, the macro is called once with three arguments:
+.\"     $1 = The element in question
+.\"     $2 = Its index of appearance (counted from 1, not 0)
+.\"     $3 = Total number of elements in the list being processed
+.\"
+.\" Usage:
+.\"     .4@ [LIST] [MACRO]
+.\"
+.\" Example:
+.\"     .de XY
+.\"     \\$2/\\$3: \\$1
+.\"     .br
+.\"     ..
+.\"     .4@ "Foo Bar Baz" XY
+.\"   Output:
+.\"     1/3: Foo
+.\"     2/3: Bar
+.\"     3/3: Baz
+.\"
+.\" Uses:
+.\"     .ev 1
+.\"
+.\" Clobbers:
+.\"     \*(4^B \*(4^C \*(4^E \*(4^F \*(4\a \*(^B4 \*(^C4
+.\"     \n(4^B \n(4^C \n(4^F \n(4\a \n(^C4
+.de 4@
+.	\" Toggle line "squeezing"
+.	do aln .hy 4
+.	do aln .warn 4
+.	de 4 >>
+.		ie \\\\$1 \{\
+.			ev 1
+.			na
+.			nh
+.			fi
+.			ll \\n(.Hu
+.			do warn 0
+.		\}
+.		el \{\
+.			ad \\n(.j
+.			ll \\n(.lu
+.			if \\n(.u=0 .nf
+.			do hy \\n(4
+.			do warn \\n(4
+.			ev
+.		\}
+.	>>
+.	4 1
+.
+.	\" Compute total number of entries
+.	di 4
+\\$1
+.		br
+.		nr 4 \\n(.d/\\n(.v
+.	di
+.
+.	\" Output collected from callback invocations
+.	di 4
+.	di
+.	nr 4 0 \" Flag indicating that output was generated
+.
+.	\" Callback wrapper
+.	de 4 >>
+.		4
+'		da 4
+'			if \\\\n(.$>0 '\\$2 \\\\$1 \\\\n+(4 \\n(4
+'			if \\\\n(.$>1 '\\$2 \\\\$2 \\\\n+(4 \\n(4
+'			if \\\\n(.$>2 '\\$2 \\\\$3 \\\\n+(4 \\n(4
+'			if \\\\n(.$>3 '\\$2 \\\\$4 \\\\n+(4 \\n(4
+'			if \\\\n(.$>4 '\\$2 \\\\$5 \\\\n+(4 \\n(4
+'			if \\\\n(.$>5 '\\$2 \\\\$6 \\\\n+(4 \\n(4
+'			if \\\\n(.$>6 '\\$2 \\\\$7 \\\\n+(4 \\n(4
+'			if \\\\n(.$>7 '\\$2 \\\\$8 \\\\n+(4 \\n(4
+'			if \\\\n(.$>8 '\\$2 \\\\$9 \\\\n+(4 \\n(4
+'			if !(\\\\n(.h=\\n(.h):(\\\\n(.d=\\n(.d) .nr 4 1
+'			if (\\\\n(4=1)&(\\\\n(4>=\\n(4) .br
+'		da
+.		4 1
+.	>>
+.
+.	\" Diversion trap handler
+.	de 4 >>
+.		4
+\\\\.4 \\\\
+.	>>
+.
+.	\" Iterate through blocks of 9 entries at a time
+.	de 4 >>
+.		if \\\\n(4<=\\n(4 .if !(\\\\n(4=9)&(\\n(4=9) \{\
+.			4 1
+.			nr 4 \\\\n(4-(\\\\n(4=9)
+.			if !\\\\n(4=\\n(4 \{\
+.				di 4
+.					ie \\\\n(4>0 .dt \\\\n(4 4
+.					el .4
+\\$1
+.					br
+.				di
+.				4
+.
+.				\" Start next cycle
+.				4
+.			\}
+.		\}
+.	>>
+.
+.	\" Repurpose line-count register for tracking iteration index
+.	nr 4 0 1
+.
+.	\" Conceal junk output in a throwaway diversion
+.	di 4
+.		4
+.		br
+.	di
+.
+.	\" Clean up
+.	4
+.	rm 4 4 4 4 4 4
+.	rr 4 4 4 4
+.
+.	\" Print output buffered from callbacks, if any
+.	if \\n(4=1 .4
+.	rm 4
+.	rr 4
+..
+.
+.\" Spoon-feed mandoc(1) with a diversion-free variant
+.if '\*($0'mandoc' \{\
+.de 4@
+.	de 4@-mandoc >>
+.		nr 4@-mandoc-index 0 1
+.		nr 4@-mandoc-total \\\\n(.$
+.	>>
+.	4@-mandoc \\$1
+.	de 4@-mandoc >>
+.		if \\\\n(.$>0 \{\
+.			\\$2 \\\\$1 \\\\n+[4@-mandoc-index] \\n[4@-mandoc-total]
+.			shift
+.			4@-mandoc \\\\$*
+.		\}
+.	>>
+.	4@-mandoc \\$1
+.	rm 4@-mandoc
+.	rr 4@-mandoc-index
+.	rr 4@-mandoc-total
+..
+.\}
+.
 .
 .\" ===========================[ COMPATIBILITY ]============================{{{1
 .
