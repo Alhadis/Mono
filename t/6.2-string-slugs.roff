@@ -1,8 +1,17 @@
 .so ./ono.tmac
 .
-.~- "Foo bar" xy
-\*(xy
+.~- xy "Foo bar"
+.ie 'foo-bar'\*(xy' Yes
+.el No: [\*(xy]
 .br
 .
-.~- " Here's  an ""ID"" string ++1 2 3_4 5 6 7 8 9" xy
-[\*(xy]
+.~- xy "  (Here's)  an  ID string. M8  "
+.ie 'heres-an-id-string-m8'\*(xy' Yes
+.el No: [\*(xy]
+.br
+.
+.\" FIXME
+.~- xy " Here's  an ""ID"" string ++1 2 3_4 5 6 7 8 9"
+.ie '\*(xy'heres-an-id-string-1-2-3-4-5-6-7-8-9' Yes
+.el No: [\*(xy]
+.br

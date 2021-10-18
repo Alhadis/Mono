@@ -413,74 +413,100 @@
 .	ft
 ..
 .
+.\" .=~ -- Define string $1 containing $2 with active character translations applied.
+.\"
+.\" Usage:
+.\"     .=~ [NAME] [TEXT]
+.\"
+.\" Example:
+.\"     .tr AaBbCcXxYyZz
+.\"     .=~ latin "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+.\"     \*[A-Z] => abc-xyz
+.\"
+.\"   Initialising string with value (identical to above example):
+.\"     .=~ latin "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+.\"
+.\" Clobbers:
+.\"     \*(=^C \*(=^E
+.de =~
+.	de = >>
+.		ds \\$1 \\\\$1
+.	>>
+.	di =
+.		tr .="
+.		br
+\!	 \\$2
+.		br
+.		tr 
+.	di
+.	=
+.	rm = =
+..
+.
 .\" .~- -- Convert a string to a format suitable for an internal identifier.
 .\"
 .\" Usage:
-.\"     .~- [TEXT] [OUT-STR]
+.\"     .~- [OUT-STR] [TEXT]
 .\"
 .\" Example:
-.\"     .~- " Here's  an ""ID"" string ++1 2 3_4 5 6 7 8 9" xy
+.\"     .~- xy " Here's  an ""ID"" string ++1 2 3_4 5 6 7 8 9"
 .\"     \*(xy => heres-an-id-string-1-2-3-4-5-6-7-8-9
 .\"
 .\" Uses:
-.\"     '..
-.\"     .ev 1
+.\"     .,+ .=~
 .\"
 .\" Clobbers:
-.\"     \*(~^B \*(~^C \*(~^E \*(~^F
+.\"     \*(~^B \*(~^C
 .\"
 .\" Bugs:
-.\"     - Currently doesn't work in GNU Troff
+.\"     - Heirloom Doctools breaks when passed strings with embedded quotes
+.\"     - Strings with spaces shouldn't be truncated to first 9 substrings
 .de ~-
-.	ev 1
+.	ds ~ \\$2
+.	,+ ~ "\\*(~" -
 .
-.	\" Callback to restore prior state
-.	de ~ >>
-.		ad \\n(.j
-.		ll \\n(.l
-.		do hy \\n[.hy]
-.		do warn \\n[.warn]
-.	>>
-.
-.	\" Smash input into separate pieces (1 word/line)
-.	na
-.	nh
-.	ll 0
-.	do warn 0
-.	ds \\$2
-.	de ~ >>
-.		di
-.		ie \\\\n(dl>0 \{\
-.			if !'\\\\*(\\$2'' .as \\$2 -
-.			as \\$2 \\\\*(~
-.		\}
-.		br
-.		di ~
-.		dt 1 ~
-.	>>
-.
-.	\" s/[^-a-z]//g and convert to lowercase
-.	tr '\&"\&\(aq\&\(lq\&\(rq\&\(oq\&\(cq\&\(aa\&\(ga\&
-.	tr "\&!\&#\&$\&%\&&\&(\&)\&*\&+\&,\&.\&/\&:\&;\&<\&=\&>\&?\&@\&[\&\e\&]\&^\&`\&{\&|\&}\&~\&
-.	tr \(hy-\(mi-\(en-\(em-_-
-.	di ~
-.	di ~
-.	dt 1 ~
-\c
-.	.. "\\$1"
-.	di
-.	di
-.
-.	\" Clean up
+.	\" Strip unwanted characters
+.	tr ' " \(aq \(lq \(rq \(oq \(cq \(aa \(ga
+.	tr " ! # $ % & ( ) * + , . / : ; < = > ? @ [ \e ] ^ ` { | } ~
+.	=~ ~ "\\*(~
 .	tr ''""\(aq\(aq\(lq\(lq\(rq\(rq\(oq\(oq\(cq\(cq\(aa\(aa\(ga\(ga
 .	tr !!##$$%%&&(())**++,,..//::;;<<==>>??@@[[\e\e]]^^``{{||}}~~
+.
+.	\" Replace punctuation with dashes
+.	tr \(hy-\(mi-\(en-\(em-_-
+.	tr AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
+.	tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
+.	,+ ~ "\\*(~
+.	=~ ~  \\*(~
 .	tr \--\(mi\(mi\(en\(en\(em\(em__
-.	~
+.	tr AABBCCDDEEFFGGHHIIJJKKLLMMNNOOPPQQRRSSTTUUVVWWXXYYZZ
+.
+.	ds \\$1 \\*(~
 .	rm ~
-.	rm ~
-.	rm ~
-.	rm ~
-.	ev
+..
+.
+.\" .,+ -- Concatenate the elements of a space-delimited list.
+.\"
+.\" Usage:
+.\"     .,+ [OUT-STR] [LIST] [SEPARATOR]
+.\"
+.\" Example:
+.\"     .,+ XY "Foo Bar Baz" :
+.\"     \*(XY => Foo:Bar:Baz
+.\"
+.\" Uses:
+.\"     .4@
+.\"
+.\" Clobbers:
+.\"     \*(,^B
+.de ,+
+.	ds \\$1
+.	de , >>
+.		if \\\\$2>1 .as \\$1 \\$3
+.		as \\$1 \\\\$1
+.	>>
+.	4@ "\\$2" ,
+.	rm ,
 ..
 .
 .\" .4@ -- Execute a macro for each item in a space-delimited list.
@@ -509,7 +535,7 @@
 .\"
 .\" Clobbers:
 .\"     \*(4^B \*(4^C \*(4^E \*(4^F \*(4\a \*(^B4 \*(^C4
-.\"     \n(4^B \n(4^C \n(4^F \n(4\a \n(^C4
+.\"     \n(4^B \n(4^C \n(4^E \n(4^F \n(4\a \n(^B4 \n(^C4
 .de 4@
 .	\" Toggle line "squeezing"
 .	do aln .hy 4
@@ -534,6 +560,11 @@
 .	>>
 .	4 1
 .
+.	\" Sanity checks
+.	ds 4 \\$1
+.	if !\w'\\*(4' .ig << \" Empty list
+.	if '\\$2''      .ig << \" Missing argument
+.
 .	\" Compute total number of entries
 .	di 4
 \\$1
@@ -549,6 +580,7 @@
 .	\" Callback wrapper
 .	de 4 >>
 .		4
+.		nr 4 \\\\n(4
 '		da 4
 '			if \\\\n(.$>0 '\\$2 \\\\$1 \\\\n+(4 \\n(4
 '			if \\\\n(.$>1 '\\$2 \\\\$2 \\\\n+(4 \\n(4
@@ -562,11 +594,13 @@
 '			if !(\\\\n(.h=\\n(.h):(\\\\n(.d=\\n(.d) .nr 4 1
 '			if (\\\\n(4=1)&(\\\\n(4>=\\n(4) .br
 '		da
+'		if \\\\n(4=\\\\n(4 .nr 4 2
 .		4 1
 .	>>
 .
 .	\" Diversion trap handler
 .	de 4 >>
+.		nr 4 0
 .		4
 \\\\.4 \\\\
 .	>>
@@ -577,16 +611,20 @@
 .			4 1
 .			nr 4 \\\\n(4-(\\\\n(4=9)
 .			if !\\\\n(4=\\n(4 \{\
+.				nr 4 1
 .				di 4
 .					ie \\\\n(4>0 .dt \\\\n(4 4
 .					el .4
 \\$1
 .					br
 .				di
-.				4
 .
 .				\" Start next cycle
-.				4
+.				if \\\\n(4=0 .if !\\\\n(4=2 \{\
+.					4
+.					.4
+.				\}
+.
 .			\}
 .		\}
 .	>>
@@ -600,10 +638,14 @@
 .		br
 .	di
 .
+.	\" Safety net
+.	ig <<
+.	<<
+.
 .	\" Clean up
 .	4
 .	rm 4 4 4 4 4 4
-.	rr 4 4 4 4
+.	rr 4 4 4 4 4 4
 .
 .	\" Print output buffered from callbacks, if any
 .	if \\n(4=1 .4
@@ -1026,8 +1068,8 @@
 .\" Header
 .de #
 .	if \\n(.$=0 .ig >>
-.	ie !'\\$2'' .~- "\\$2" #
-.	el \\n(.$=1 .~- "\\$1" #
+.	ie !'\\$2'' .~- # "\\$2"
+.	el \\n(.$=1 .~- # "\\$1"
 .	#+ "\\$1" "\\*(#" #
 ..
 .
