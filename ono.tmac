@@ -419,12 +419,9 @@
 .\"     .=~ [NAME] [TEXT]
 .\"
 .\" Example:
-.\"     .tr AaBbCcXxYyZz
-.\"     .=~ latin "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-.\"     \*[A-Z] => abc-xyz
-.\"
-.\"   Initialising string with value (identical to above example):
-.\"     .=~ latin "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+.\"     .tr AaBbCcXxYyZz-
+.\"     .=~ A-Z "ABC-XYZ"
+.\"     \*[A-Z] => abc xyz
 .\"
 .\" Clobbers:
 .\"     \*(=^C \*(=^E
@@ -533,29 +530,54 @@
 .\" Uses:
 .\"     .ev 1
 .\"
+.\" Modifies:
+.\"     .in -- Set to \n(.H in environment 1 (ditroff/otroff only)
+.\"
 .\" Clobbers:
-.\"     \*(4^B \*(4^C \*(4^E \*(4^F \*(4\a \*(^B4 \*(^C4
-.\"     \n(4^B \n(4^C \n(4^E \n(4^F \n(4\a \n(^B4 \n(^C4
+.\"     \*(4^B \*(4^C \*(4^E \*(4^F \*(4\a \*(^B4 \*(^C4 \*(^F4
+.\"     \n(4^B \n(4^C \n(4^E \n(4^F \n(4\a \n(^B4 \n(^C4 \n(^F4
 .de 4@
+.
+.	\" Heirloom Doctools freaks when needlessly pushing/popping environment
+.	if !'\*($0'ditroff' .if !'\*($0'otroff' \{\
+.		do als 4 ev
+.		ig @@
+.	\}
+.	de 4 >>
+.		ie \\\\$1 \{\
+.			if !\\\\n(.iu=\\n(.Hu \{\
+.				ev \\\\$1
+.				in \\n(.Hu
+.			\}
+.		\}
+.		el .if \\\\n(.iu=\\n(.Hu .ev
+.	>>
+.	ig @@
+.	@@
+.
 .	\" Toggle line "squeezing"
 .	do aln .hy 4
 .	do aln .warn 4
 .	de 4 >>
+.		ec
 .		ie \\\\$1 \{\
-.			ev 1
+.			4 1
 .			na
 .			nh
 .			fi
 .			ll \\n(.Hu
 .			do warn 0
+.			nr 4 1
 .		\}
-.		el \{\
+.		el .if \\\\n(4=1 \{\
+.			nr 4 0
 .			ad \\n(.j
 .			ll \\n(.lu
 .			if \\n(.u=0 .nf
+.			hy
 .			do hy \\n(4
 .			do warn \\n(4
-.			ev
+.			4
 .		\}
 .	>>
 .	4 1
@@ -567,7 +589,7 @@
 .
 .	\" Compute total number of entries
 .	di 4
-\\$1
+ \\$1
 .		br
 .		nr 4 \\n(.d/\\n(.v
 .	di
@@ -596,35 +618,40 @@
 '		da
 '		if \\\\n(4=\\\\n(4 .nr 4 2
 .		4 1
+.		ec 
 .	>>
 .
 .	\" Diversion trap handler
 .	de 4 >>
 .		nr 4 0
+.		ec
 .		4
-\\\\.4 \\\\
+.		ec 
+.4 
 .	>>
 .
 .	\" Iterate through blocks of 9 entries at a time
 .	de 4 >>
 .		if \\\\n(4<=\\n(4 .if !(\\\\n(4=9)&(\\n(4=9) \{\
 .			4 1
-.			nr 4 \\\\n(4-(\\\\n(4=9)
+.			nr 4 \\\\n(4
 .			if !\\\\n(4=\\n(4 \{\
 .				nr 4 1
 .				di 4
-.					ie \\\\n(4>0 .dt \\\\n(4 4
+.					ie \\\\n(4>0 \{\
+.						dt \\\\n(4 4
+.						ec  \}
 .					el .4
-\\$1
+ \\$1
 .					br
 .				di
+.				ec
 .
 .				\" Start next cycle
 .				if \\\\n(4=0 .if !\\\\n(4=2 \{\
 .					4
-.					.4
+.					4
 .				\}
-.
 .			\}
 .		\}
 .	>>
@@ -644,8 +671,8 @@
 .
 .	\" Clean up
 .	4
-.	rm 4 4 4 4 4 4
-.	rr 4 4 4 4 4 4
+.	rm 4 4 4 4 4 4 4
+.	rr 4 4 4 4 4 4 4
 .
 .	\" Print output buffered from callbacks, if any
 .	if \\n(4=1 .4
