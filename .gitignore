@@ -25,3 +25,5 @@ package-lock.json
 /*.out
 /*.pdf
 /*.ps
+*.bytes
+tmac.ono
