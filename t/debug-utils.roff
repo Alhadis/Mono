@@ -1,0 +1,39 @@
+.\" .? -- Print arguments in an unambiguous fashion
+.de ?
+.	tm \\n(.$ argument(s)
+.	if !'\\$1'\\$1' \
+.		tm 	NOT strings!
+.	if \\n(.$>0 .tm 	$1 = \\$1
+.	if \\n(.$>1 .tm 	$2 = \\$2
+.	if \\n(.$>2 .tm 	$3 = \\$3
+.	if \\n(.$>3 .tm 	$4 = \\$4
+.	if \\n(.$>4 .tm 	$5 = \\$5
+.	if \\n(.$>5 .tm 	$6 = \\$6
+.	if \\n(.$>6 .tm 	$7 = \\$7
+.	if \\n(.$>7 .tm 	$8 = \\$8
+.	if \\n(.$>8 .tm 	$9 = \\$9
+..
+.
+.\" <! -- Print a macro's source code
+.de <!
+.	ev 2
+.	nf
+.	na
+.	nh
+.	ft CW
+.	ll 1000n
+.	tr '\(aq"\(dq-\-^\(ha`\(ga~\(ti
+.	rn \\$1 <
+.	ec 
+.	c2 
+.	cc 
+.de $1
+&*(<c
+..
+	cc
+.	c2
+.	ec
+.	rn < \\$1
+.	tr ''""--^^``~~
+.	ev
+..
