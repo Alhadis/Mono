@@ -170,6 +170,8 @@
 .
 .\" .UL -- Proper underlined text.
 .\"
+.\" TODO: Deal with grotty(1) v1.23's "-i" (and "-r") switches.
+.\"
 .\" Usage:
 .\"     .UL [TEXT]
 .\"     .UL [TEXT] [AFFIX]
@@ -185,6 +187,7 @@
 .\" Bugs:
 .\"    - Line-wrapping produces ugly underlines stretching to the left margin of
 .\"      the page: continuous underlining should be restricted to interword gaps
+.\"    - Underline drawn too closely to character baseline in troff(1)
 .de UL
 '	\" Temporarily disable no-fill mode
 '	nr U 0
