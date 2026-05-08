@@ -78,34 +78,6 @@
 .	ds CE \\f(BI
 .\}
 .
-.\" .FONT -- Set typeface, point-size and vertical spacing simultaneously.
-.\"
-.\" TODO: Allow size argument to be omitted if name is obviously non-numeric.
-.\"
-.\" Usage:
-.\"     .FONT  [SIZE] [NAME]
-.\"     .FO NT [SIZE] [NAME]
-.\"
-.\" Examples:
-.\"     .FONT 1.5 Helvetica
-.\"     .FONT 12p
-.\"
-.de FONT
-.	FO \\$1 \\$2
-.	.
-.	ig NT
-.	NT
-..
-.de FO \" Called in compatibility-mode
-.	ie 'NT'\\$1' \
-.		FO \\$2 \\$3
-.	el \{\
-.		ps \\$1
-.		vs \\$1
-.		if !''\\$2' .ft \\$2
-'	\}
-..
-.
 .
 .\"================================[ DATES ]================================{{{1
 .
